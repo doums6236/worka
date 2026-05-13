@@ -1,6 +1,6 @@
 import {
   Body, Controller, Delete, Get, Param, Patch, Post, Query,
-  UseGuards, BadRequestException, NotFoundException,
+  UseGuards, BadRequestException, NotFoundException, UseInterceptors,
 } from '@nestjs/common';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -10,6 +10,8 @@ import { AccessPayload } from '../auth/jwt.service';
 import { JobsService } from './jobs.service';
 import { createJobSchema, updateJobSchema } from './dto/job.dto';
 import { JobStatus } from '@prisma/client';
+import { AuditInterceptor } from '../audit/audit.interceptor';
+import { Audit } from '../audit/audit.decorator';
 
 @Controller('jobs')
 export class JobsController {
@@ -65,14 +67,18 @@ export class JobsController {
 
   @Post(':id/publish')
   @UseGuards(JwtGuard, RolesGuard)
+  @UseInterceptors(AuditInterceptor)
   @Roles('admin')
+  @Audit('job.publish', 'job')
   publish(@Param('id') id: string) {
     return this.svc.publish(id);
   }
 
   @Post(':id/reject')
   @UseGuards(JwtGuard, RolesGuard)
+  @UseInterceptors(AuditInterceptor)
   @Roles('admin')
+  @Audit('job.reject', 'job')
   reject(@Param('id') id: string) {
     return this.svc.reject(id);
   }

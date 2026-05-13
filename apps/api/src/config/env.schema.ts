@@ -21,6 +21,11 @@ export const envSchema = z.object({
   SMS_PROVIDER: z.enum(['mock', 'cinetpay']).default('mock'),
   CINETPAY_API_KEY: z.string().optional(),
   CINETPAY_SITE_ID: z.string().optional(),
+  CINETPAY_SECRET_KEY: z.string().optional(),
+  CINETPAY_BASE_URL: z.string().url().default('https://api-checkout.cinetpay.com/v2'),
+  CINETPAY_MODE: z.enum(['mock', 'sandbox', 'live']).default('mock'),
+  CINETPAY_NOTIFY_URL: z.string().url().optional(),
+  CINETPAY_RETURN_URL: z.string().url().optional(),
 
   STORAGE_PROVIDER: z.enum(['mock', 'r2']).default('mock'),
   R2_ACCOUNT_ID: z.string().optional(),

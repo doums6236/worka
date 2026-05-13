@@ -15,6 +15,10 @@ import { JobsModule } from './jobs/jobs.module';
 import { FeedModule } from './feed/feed.module';
 import { SwipesModule } from './swipes/swipes.module';
 import { ApplicationsModule } from './applications/applications.module';
+import { PricingModule } from './pricing/pricing.module';
+import { PaymentsModule } from './payments/payments.module';
+import { AuditModule } from './audit/audit.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -35,6 +39,10 @@ import { ApplicationsModule } from './applications/applications.module';
     FeedModule,
     SwipesModule,
     ApplicationsModule,
+    PricingModule,
+    PaymentsModule,
+    AuditModule,
+    ChatModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })

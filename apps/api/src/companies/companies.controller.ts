@@ -1,10 +1,12 @@
-import { Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Patch, UseGuards, UseInterceptors } from '@nestjs/common';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { AccessPayload } from '../auth/jwt.service';
 import { CompaniesService } from './companies.service';
+import { AuditInterceptor } from '../audit/audit.interceptor';
+import { Audit } from '../audit/audit.decorator';
 
 @Controller('companies')
 @UseGuards(JwtGuard, RolesGuard)
@@ -23,6 +25,8 @@ export class CompaniesController {
   }
 
   @Patch(':id/verify')
+  @UseInterceptors(AuditInterceptor)
+  @Audit('company.verify', 'company')
   verify(@Param('id') id: string, @CurrentUser() u: AccessPayload) {
     return this.svc.verify(id, u.sub);
   }
