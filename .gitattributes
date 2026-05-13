@@ -1,0 +1,9 @@
+# Force LF line endings on shell scripts so they execute correctly in
+# Linux containers (Railway, Docker). Without this, files authored on
+# Windows would get CRLF and Linux would error: `bad interpreter: No such
+# file or directory` or silent exit on the first line.
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.dockerignore text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
