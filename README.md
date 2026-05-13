@@ -54,9 +54,9 @@ pnpm --filter @worka/api build
 
 ## Staging
 
-Auto-déployé depuis la branche `main` vers Railway (Backend) + futurs Vercel (web).
+🟢 **Backend en ligne** : https://workaapi-production.up.railway.app
 
-URL staging : *configurée après provisioning Railway (voir [Plan 1D Task 5](docs/superpowers/plans/2026-05-13-worka-backend-1d-cicd-deploy.md)).*
+Auto-déployé depuis la branche `main` vers Railway (Backend) + futurs Vercel (web).
 
 Health endpoint : `/api/v1/health` (probé automatiquement par Railway pour auto-restart).
 
