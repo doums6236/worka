@@ -347,7 +347,6 @@ SMS_PROVIDER=mock
 
 ```typescript
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 
@@ -355,7 +354,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(helmet());
   app.enableCors({ origin: true, credentials: true });
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.setGlobalPrefix('api/v1');
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
@@ -363,6 +361,8 @@ async function bootstrap() {
 }
 bootstrap();
 ```
+
+> Note: nous n'utilisons PAS `ValidationPipe` car notre stratégie de validation est **Zod** (chaque controller appelle `schema.safeParse(body)` avant de passer à un service). Ajouter `useGlobalPipes(new ValidationPipe(...))` exigerait d'installer `class-validator` et `class-transformer` qu'on n'utilise pas. Voir Tasks 11-13 pour la validation Zod en pratique.
 
 - [ ] **Step 6: Create `apps/api/src/app.module.ts`**
 
@@ -1626,7 +1626,7 @@ git commit -m "feat(auth): wire AuthController with send-otp and verify-otp endp
 
 ```typescript
 import { Test } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { RedisService } from '../src/common/redis.service';
@@ -1640,7 +1640,6 @@ describe('Auth (e2e)', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
     app = moduleRef.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     app.setGlobalPrefix('api/v1');
     await app.init();
     redis = moduleRef.get(RedisService);
@@ -2018,7 +2017,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
 ```typescript
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -2027,7 +2025,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(helmet());
   app.enableCors({ origin: true, credentials: true });
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(new HttpExceptionFilter());
   app.setGlobalPrefix('api/v1');
   const port = process.env.PORT ?? 3000;
