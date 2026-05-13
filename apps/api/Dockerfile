@@ -18,6 +18,7 @@ FROM node:20-alpine AS runtime
 WORKDIR /repo
 ENV NODE_ENV=production
 COPY --from=build /repo /repo
+RUN chmod +x /repo/apps/api/start.sh
 WORKDIR /repo/apps/api
 EXPOSE 3000
-CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy && node dist/main.js"]
+CMD ["/repo/apps/api/start.sh"]
