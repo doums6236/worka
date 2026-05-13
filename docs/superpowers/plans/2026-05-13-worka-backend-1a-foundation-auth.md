@@ -158,7 +158,7 @@ services:
       POSTGRES_PASSWORD: worka_dev_only
       POSTGRES_DB: worka
     ports:
-      - "5432:5432"
+      - "5433:5432"   # host 5433 to avoid clashing with a native Postgres on 5432 (Windows install)
     volumes:
       - worka-pgdata:/var/lib/postgresql/data
 
@@ -180,7 +180,7 @@ volumes:
 
 ```
 # Local development only - real secrets go in Railway/Vercel env vars
-DATABASE_URL=postgresql://worka:worka_dev_only@localhost:5432/worka
+DATABASE_URL=postgresql://worka:worka_dev_only@localhost:5433/worka
 REDIS_URL=redis://localhost:6379
 ```
 
@@ -323,7 +323,7 @@ git commit -m "chore: add docker compose for local postgres and redis"
 NODE_ENV=development
 PORT=3000
 
-DATABASE_URL=postgresql://worka:worka_dev_only@localhost:5432/worka
+DATABASE_URL=postgresql://worka:worka_dev_only@localhost:5433/worka
 REDIS_URL=redis://localhost:6379
 
 JWT_ACCESS_SECRET=change_me_to_a_64_char_random_string
@@ -650,7 +650,7 @@ describe('envSchema', () => {
   const validEnv = {
     NODE_ENV: 'development',
     PORT: '3000',
-    DATABASE_URL: 'postgresql://x:y@localhost:5432/z',
+    DATABASE_URL: 'postgresql://x:y@localhost:5433/z',
     REDIS_URL: 'redis://localhost:6379',
     JWT_ACCESS_SECRET: 'a'.repeat(64),
     JWT_REFRESH_SECRET: 'b'.repeat(64),
