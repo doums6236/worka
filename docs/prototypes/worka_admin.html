@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Worka Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0B0F1A;
+  --surface:#111827;
+  --surface2:#1A2235;
+  --surface3:#212D42;
+  --border:#1E2D45;
+  --border2:#253550;
+  --blue:#1A6FFF;
+  --blue2:#2D8DFF;
+  --blue-dim:rgba(26,111,255,.12);
+  --green:#00C47C;
+  --green-dim:rgba(0,196,124,.12);
+  --yellow:#FFB800;
+  --yellow-dim:rgba(255,184,0,.12);
+  --red:#FF4757;
+  --red-dim:rgba(255,71,87,.12);
+  --purple:#7B61FF;
+  --purple-dim:rgba(123,97,255,.12);
+  --text:#F0F4FF;
+  --text2:#8A9BBE;
+  --text3:#4A5A78;
+  --font:'DM Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+  --radius:14px;
+  --sidebar:240px;
+}
+html,body{width:100%;height:100%;background:var(--bg);font-family:var(--font);color:var(--text);overflow:hidden}
+
+/* ── LAYOUT ── */
+.shell{display:flex;height:100vh;width:100vw}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;z-index:10}
+.sb-logo{padding:22px 20px 18px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--border)}
+.sb-logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#1A6FFF,#0038C4);display:flex;align-items:center;justify-content:center}
+.sb-logo-text{font-size:18px;font-weight:700;letter-spacing:-.5px}
+.sb-logo-text span{color:var(--blue2)}
+.sb-badge{font-size:9px;font-weight:700;background:var(--blue-dim);color:var(--blue2);padding:2px 7px;border-radius:6px;letter-spacing:.5px;margin-left:auto}
+
+.sb-section{padding:10px 12px 4px;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-top:6px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;margin:1px 8px;transition:all .15s;position:relative}
+.sb-item:hover{background:var(--surface2)}
+.sb-item.active{background:var(--blue-dim)}
+.sb-item.active .sb-label{color:var(--blue2);font-weight:600}
+.sb-item.active .sb-icon{color:var(--blue2)}
+.sb-icon{width:18px;height:18px;color:var(--text3);flex-shrink:0;transition:color .15s}
+.sb-item:hover .sb-icon{color:var(--text2)}
+.sb-label{font-size:13px;font-weight:500;color:var(--text2);transition:color .15s}
+.sb-item:hover .sb-label{color:var(--text)}
+.sb-pill{margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px}
+.sb-pill.blue{background:var(--blue-dim);color:var(--blue2)}
+.sb-pill.red{background:var(--red-dim);color:var(--red)}
+.sb-pill.green{background:var(--green-dim);color:var(--green)}
+
+.sb-footer{margin-top:auto;padding:14px 12px;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:9px;padding:8px 8px;border-radius:10px;cursor:pointer;transition:background .15s}
+.sb-user:hover{background:var(--surface2)}
+.sb-avatar{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#1A6FFF,#7B61FF);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.sb-uname{font-size:12px;font-weight:600;color:var(--text)}
+.sb-urole{font-size:10px;color:var(--text3)}
+.sb-chevron{margin-left:auto;color:var(--text3);font-size:12px}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── TOPBAR ── */
+.topbar{height:58px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:14px;flex-shrink:0}
+.tb-title{font-size:16px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.tb-breadcrumb{font-size:12px;color:var(--text3);margin-left:4px}
+.tb-sep{color:var(--text3);font-size:12px}
+.tb-page{color:var(--text2);font-size:12px}
+.tb-spacer{flex:1}
+.tb-search{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:7px 13px;width:220px;cursor:text}
+.tb-search input{background:transparent;border:none;outline:none;font-family:var(--font);font-size:12px;color:var(--text);flex:1}
+.tb-search input::placeholder{color:var(--text3)}
+.tb-search-icon{color:var(--text3)}
+.tb-actions{display:flex;align-items:center;gap:8px}
+.tb-btn{width:34px;height:34px;border-radius:9px;background:var(--surface2);border:1px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all .15s;position:relative}
+.tb-btn:hover{background:var(--surface3);color:var(--text)}
+.tb-notif-dot{position:absolute;top:7px;right:7px;width:6px;height:6px;border-radius:50%;background:var(--red);border:1.5px solid var(--surface)}
+.tb-date{font-size:11px;color:var(--text3);font-family:var(--mono)}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:24px 28px;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+.content::-webkit-scrollbar{width:5px}
+.content::-webkit-scrollbar-track{background:transparent}
+.content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── PAGES ── */
+.page{display:none}
+.page.active{display:block}
+
+/* ── KPI ROW ── */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden;transition:border-color .2s}
+.kpi:hover{border-color:var(--border2)}
+.kpi::before{content:'';position:absolute;inset:0;background:var(--kpi-glow,transparent);opacity:.4;pointer-events:none}
+.kpi-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.kpi-val{font-size:26px;font-weight:700;letter-spacing:-1px;margin-bottom:3px;font-family:var(--mono)}
+.kpi-label{font-size:12px;color:var(--text2);font-weight:500;margin-bottom:10px}
+.kpi-trend{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600}
+.kpi-trend.up{color:var(--green)}
+.kpi-trend.down{color:var(--red)}
+.kpi-trend.neutral{color:var(--text3)}
+.kpi-spark{position:absolute;bottom:0;right:0;opacity:.25}
+
+/* ── TWO-COL ── */
+.two-col{display:grid;grid-template-columns:1fr 380px;gap:14px;margin-bottom:22px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:22px}
+.full-col{margin-bottom:22px}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:1px solid var(--border)}
+.card-title{font-size:13px;font-weight:700;color:var(--text)}
+.card-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.card-body{padding:18px 20px}
+.card-actions{display:flex;gap:7px;align-items:center}
+.ca-btn{padding:5px 11px;border-radius:7px;font-size:11px;font-weight:600;border:none;cursor:pointer;font-family:var(--font);transition:all .15s}
+.ca-btn.ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border2)}
+.ca-btn.ghost:hover{background:var(--surface3);color:var(--text)}
+.ca-btn.primary{background:var(--blue);color:#fff}
+.ca-btn.primary:hover{background:var(--blue2)}
+
+/* ── CHART BARS ── */
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:10px}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%}
+.bar{width:100%;border-radius:5px 5px 0 0;transition:height .6s cubic-bezier(.4,0,.2,1);position:relative;cursor:pointer}
+.bar:hover::after{content:attr(data-val);position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);background:var(--surface3);color:var(--text);font-size:10px;font-weight:700;padding:3px 7px;border-radius:5px;white-space:nowrap;font-family:var(--mono)}
+.bar-lbl{font-size:9px;color:var(--text3);font-weight:500;white-space:nowrap}
+
+/* ── LINE CHART (SVG) ── */
+.line-chart-wrap{position:relative;height:140px;margin-bottom:8px}
+.lc-grid line{stroke:var(--border);stroke-width:.5}
+.lc-line{fill:none;stroke:var(--blue);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.lc-area{fill:url(#areaGrad);stroke:none}
+.lc-dot{fill:var(--blue);stroke:var(--surface);stroke-width:2.5}
+.lc-labels{display:flex;justify-content:space-between;padding:0 8px;margin-top:4px}
+.lc-lbl{font-size:10px;color:var(--text3);font-family:var(--mono)}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;padding:0 16px 10px;border-bottom:1px solid var(--border)}
+.tbl td{padding:11px 16px;font-size:12px;color:var(--text2);border-bottom:1px solid var(--border);transition:background .1s}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--surface2)}
+.tbl td:first-child,.tbl th:first-child{padding-left:20px}
+.tbl td:last-child,.tbl th:last-child{padding-right:20px}
+.td-bold{font-weight:600;color:var(--text)!important}
+.td-mono{font-family:var(--mono);font-size:11px!important}
+.td-green{color:var(--green)!important;font-weight:600}
+.td-red{color:var(--red)!important;font-weight:600}
+.td-blue{color:var(--blue2)!important;font-weight:600}
+.td-yellow{color:var(--yellow)!important;font-weight:600}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:6px;font-size:10px;font-weight:700}
+.badge.green{background:var(--green-dim);color:var(--green)}
+.badge.red{background:var(--red-dim);color:var(--red)}
+.badge.blue{background:var(--blue-dim);color:var(--blue2)}
+.badge.yellow{background:var(--yellow-dim);color:var(--yellow)}
+.badge.purple{background:var(--purple-dim);color:var(--purple)}
+.badge-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+/* ── PROGRESS ── */
+.prog{height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-top:5px}
+.prog-fill{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+
+/* ── USER ROW ── */
+.user-row{display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.user-row:last-child{border-bottom:none}
+.user-row:hover{background:var(--surface2)}
+.user-ava{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;font-weight:700}
+.user-name{font-size:12px;font-weight:600;color:var(--text)}
+.user-meta{font-size:11px;color:var(--text3)}
+.user-stat{margin-left:auto;font-size:11px;font-weight:700;font-family:var(--mono)}
+
+/* ── JOB ROW ── */
+.job-row-admin{display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer}
+.job-row-admin:last-child{border-bottom:none}
+.job-row-admin:hover{background:var(--surface2)}
+.jr-emoji{width:34px;height:34px;border-radius:9px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+
+/* ── MINI STAT ── */
+.mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini-stat{background:var(--surface2);border-radius:10px;padding:12px 14px}
+.ms-val{font-size:20px;font-weight:700;font-family:var(--mono);margin-bottom:2px}
+.ms-lbl{font-size:10px;color:var(--text3);font-weight:500}
+
+/* ── ACTIVITY FEED ── */
+.activity-item{display:flex;align-items:flex-start;gap:11px;padding:10px 20px;border-bottom:1px solid var(--border)}
+.activity-item:last-child{border-bottom:none}
+.act-dot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.act-text{font-size:12px;color:var(--text2);line-height:1.4}
+.act-text strong{color:var(--text);font-weight:600}
+.act-time{font-size:10px;color:var(--text3);font-family:var(--mono);white-space:nowrap;margin-left:auto;padding-top:2px}
+
+/* ── DONUT ── */
+.donut-wrap{display:flex;align-items:center;gap:20px;padding:4px 0}
+.donut-legend{display:flex;flex-direction:column;gap:8px;flex:1}
+.dl-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2)}
+.dl-color{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dl-val{margin-left:auto;font-weight:700;font-family:var(--mono);color:var(--text);font-size:11px}
+
+/* ── MAP PLACEHOLDER ── */
+.map-placeholder{height:180px;background:var(--surface2);border-radius:10px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.map-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:28px 28px;opacity:.4}
+.map-dot{position:absolute;border-radius:50%;background:var(--blue);box-shadow:0 0 10px var(--blue)}
+.map-dot.lg{width:16px;height:16px;opacity:.9}
+.map-dot.md{width:10px;height:10px;opacity:.7}
+.map-dot.sm{width:6px;height:6px;opacity:.5}
+.map-label{position:absolute;font-size:10px;font-weight:700;color:var(--blue2);font-family:var(--mono)}
+.map-pulse{position:absolute;border-radius:50%;background:rgba(26,111,255,.3);animation:pulse 2s ease-out infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(3);opacity:0}}
+
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.fb-input{background:var(--surface2);border:1px solid var(--border2);border-radius:9px;padding:7px 13px;font-family:var(--font);font-size:12px;color:var(--text);outline:none;width:220px}
+.fb-input::placeholder{color:var(--text3)}
+.fb-input:focus{border-color:var(--blue)}
+.fb-select{background:var(--surface2);border:1px solid var(--border2);border-radius:9px;padding:7px 13px;font-family:var(--font);font-size:12px;color:var(--text2);outline:none;cursor:pointer}
+.fb-spacer{flex:1}
+.fb-btn{padding:7px 14px;border-radius:9px;font-family:var(--font);font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all .15s}
+.fb-btn.primary{background:var(--blue);color:#fff}
+.fb-btn.primary:hover{background:var(--blue2)}
+.fb-btn.ghost{background:var(--surface2);border:1px solid var(--border2);color:var(--text2)}
+.fb-btn.ghost:hover{background:var(--surface3);color:var(--text)}
+
+/* ── PAGE HEADER ── */
+.page-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px}
+.ph-title{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-bottom:3px}
+.ph-sub{font-size:13px;color:var(--text2)}
+.ph-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+
+/* ── PAGINATION ── */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--border)}
+.pg-info{font-size:11px;color:var(--text3)}
+.pg-btns{display:flex;gap:5px}
+.pg-btn{width:28px;height:28px;border-radius:7px;background:var(--surface2);border:1px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text2);transition:all .15s;font-family:var(--font)}
+.pg-btn:hover{background:var(--surface3);color:var(--text)}
+.pg-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
+
+/* ── NOTIFICATION ── */
+.notif-item{display:flex;gap:10px;padding:12px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.notif-item:hover{background:var(--surface2)}
+.notif-item.unread{border-left:2px solid var(--blue)}
+.notif-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+.notif-body{flex:1}
+.notif-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px}
+.notif-desc{font-size:11px;color:var(--text3);line-height:1.4}
+.notif-time{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:4px}
+
+/* ── SWITCH ── */
+.switch{width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.switch.on{background:var(--green)}
+.switch.off{background:var(--surface3)}
+.switch::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;transition:left .2s}
+.switch.on::after{left:19px}
+.switch.off::after{left:3px}
+
+/* ── TOOLTIPS / MISC ── */
+.dot-live{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700}
+
+/* Scrollbar global */
+*::-webkit-scrollbar{width:4px;height:4px}
+*::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+*::-webkit-scrollbar-track{background:transparent}
+
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ════ SIDEBAR ════ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">
+      <svg width="20" height="20" viewBox="0 0 52 52" fill="none">
+        <rect x="6" y="20" width="40" height="26" rx="7" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        <path d="M18 20V16a8 8 0 0116 0v4" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M13 30l4 9 4.5-6 4.5 6 4-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="sb-logo-text">wor<span>ka</span></div>
+    <div class="sb-badge">ADMIN</div>
+  </div>
+
+  <div class="sb-section">Principal</div>
+  <div class="sb-item active" onclick="showPage('dashboard')">
+    <svg class="sb-icon" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="9" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="2" width="9" height="7" rx="2" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="13" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.8"/><rect x="2" y="17" width="9" height="5" rx="2" stroke="currentColor" stroke-width="1.8"/></svg>
+    <span class="sb-label">Dashboard</span>
+  </div>
+  <div class="sb-item" onclick="showPage('users')">
+    <svg class="sb-icon" viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M2 20c0-4 2.7-7 6-7h4c3.3 0 6 3 6 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="18" cy="7" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M21 17c0-2.5-1.5-4.5-3-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span class="sb-label">Utilisateurs</span>
+    <span class="sb-pill blue">2 841</span>
+  </div>
+  <div class="sb-item" onclick="showPage('offres')">
+    <svg class="sb-icon" viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="14" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M12 12v4M10 14h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span class="sb-label">Offres d'emploi</span>
+    <span class="sb-pill blue">384</span>
+  </div>
+  <div class="sb-item" onclick="showPage('candidatures')">
+    <svg class="sb-icon" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M8 9h8M8 13h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span class="sb-label">Candidatures</span>
+    <span class="sb-pill red">12</span>
+  </div>
+  <div class="sb-item" onclick="showPage('entreprises')">
+    <svg class="sb-icon" viewBox="0 0 24 24" fill="none"><path d="M3 21V7l9-4 9 4v14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21v-5h6v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 10h.01M15 10h.01M9 14h.01M15 14h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span class="sb-label">Entreprises</span>
+  </div>
+
+  <div class="sb-section">Monétisation</div>
+  <div class="sb-item" onclick="showPage('premium')">
+    <svg class="sb-icon" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17 5.8 21.3l2.4-7.4L2 9.4h7.6L12 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    <span class="sb-label">Premium</span>
+    <span class="sb-pill green">+18%</span>
+  </div>
+  <div class="sb-item" onclick="showPage('revenus')">
+    <svg class="sb-icon" viewBox="0 0 24 24" fill="none"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span class="sb-label">Revenus</span>
+  </div>
+  <div class="sb-item" onclick="showPage('pubs')">
+    <svg class="sb-icon" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span class="sb-label">Publicités</span>
+  </div>
+
+  <div class="sb-section">Système</div>
+  <div class="sb-item" onclick="showPage('moderation')">
+    <svg class="sb-icon" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    <span class="sb-label">Modération</span>
+    <span class="sb-pill red">7</span>
+  </div>
+  <div class="sb-item" onclick="showPage('settings')">
+    <svg class="sb-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.8"/></svg>
+    <span class="sb-label">Paramètres</span>
+  </div>
+
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar">AS</div>
+      <div><div class="sb-uname">Admin Sys</div><div class="sb-urole">Super Admin</div></div>
+      <span class="sb-chevron">›</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ════ MAIN ════ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div>
+      <span class="tb-breadcrumb" id="tb-breadcrumb">Dashboard</span>
+    </div>
+    <div class="tb-spacer"></div>
+    <div class="dot-live" style="margin-right:6px"></div>
+    <span class="tb-date" id="tb-date"></span>
+    <div class="tb-search">
+      <svg class="tb-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M17 17l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input placeholder="Rechercher…">
+    </div>
+    <div class="tb-actions">
+      <button class="tb-btn" onclick="showPage('moderation')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        <div class="tb-notif-dot"></div>
+      </button>
+      <button class="tb-btn" onclick="showPage('settings')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ════ PAGE: DASHBOARD ════ -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-hdr">
+        <div><div class="ph-title">Tableau de bord</div><div class="ph-sub">Vue d'ensemble · Conakry & Afrique · <span style="color:var(--green)">●</span> Données en direct</div></div>
+        <div class="ph-actions">
+          <select class="fb-select" style="border-radius:9px">
+            <option>30 derniers jours</option><option>7 jours</option><option>Cette année</option>
+          </select>
+          <button class="fb-btn primary">↓ Exporter</button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-row">
+        <div class="kpi" style="--kpi-glow:radial-gradient(circle at top right,rgba(26,111,255,.08),transparent 60%)">
+          <div class="kpi-icon" style="background:var(--blue-dim)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="4" stroke="#1A6FFF" stroke-width="2"/><path d="M2 20c0-4 2.7-7 6-7h4c3.3 0 6 3 6 7" stroke="#1A6FFF" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <div class="kpi-val">2 841</div>
+          <div class="kpi-label">Utilisateurs actifs</div>
+          <div class="kpi-trend up">↑ 12.4% vs mois dernier</div>
+          <svg class="kpi-spark" width="90" height="40" viewBox="0 0 90 40"><polyline points="0,35 15,28 30,32 45,20 60,24 75,12 90,15" fill="none" stroke="#1A6FFF" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="kpi" style="--kpi-glow:radial-gradient(circle at top right,rgba(0,196,124,.06),transparent 60%)">
+          <div class="kpi-icon" style="background:var(--green-dim)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="14" rx="3" stroke="#00C47C" stroke-width="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" stroke="#00C47C" stroke-width="2"/></svg>
+          </div>
+          <div class="kpi-val">384</div>
+          <div class="kpi-label">Offres actives</div>
+          <div class="kpi-trend up">↑ 7.2% nouvelles offres</div>
+          <svg class="kpi-spark" width="90" height="40" viewBox="0 0 90 40"><polyline points="0,30 15,25 30,28 45,18 60,22 75,14 90,10" fill="none" stroke="#00C47C" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="kpi" style="--kpi-glow:radial-gradient(circle at top right,rgba(255,184,0,.06),transparent 60%)">
+          <div class="kpi-icon" style="background:var(--yellow-dim)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="#FFB800" stroke-width="2"/><path d="M8 9h8M8 13h5" stroke="#FFB800" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <div class="kpi-val">1 207</div>
+          <div class="kpi-label">Candidatures / mois</div>
+          <div class="kpi-trend up">↑ 23.1% ce mois</div>
+          <svg class="kpi-spark" width="90" height="40" viewBox="0 0 90 40"><polyline points="0,38 15,32 30,34 45,22 60,26 75,16 90,8" fill="none" stroke="#FFB800" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="kpi" style="--kpi-glow:radial-gradient(circle at top right,rgba(123,97,255,.06),transparent 60%)">
+          <div class="kpi-icon" style="background:var(--purple-dim)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17 5.8 21.3l2.4-7.4L2 9.4h7.6L12 2z" stroke="#7B61FF" stroke-width="2" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="kpi-val">347</div>
+          <div class="kpi-label">Abonnés Premium</div>
+          <div class="kpi-trend up">↑ 18.3% revenu MRR</div>
+          <svg class="kpi-spark" width="90" height="40" viewBox="0 0 90 40"><polyline points="0,38 15,34 30,30 45,26 60,20 75,14 90,8" fill="none" stroke="#7B61FF" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+
+      <!-- Charts row -->
+      <div class="two-col">
+        <!-- Line chart: inscriptions -->
+        <div class="card">
+          <div class="card-hdr">
+            <div><div class="card-title">Inscriptions utilisateurs</div><div class="card-sub">Nouvelles inscriptions par mois — 2025</div></div>
+            <div class="card-actions">
+              <button class="ca-btn ghost">Semaine</button>
+              <button class="ca-btn ghost" style="background:var(--blue-dim);color:var(--blue2);border-color:var(--blue)">Mois</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="line-chart-wrap">
+              <svg width="100%" height="140" viewBox="0 0 520 140" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#1A6FFF" stop-opacity=".2"/>
+                    <stop offset="100%" stop-color="#1A6FFF" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <!-- grid lines -->
+                <line x1="0" y1="20" x2="520" y2="20" stroke="#1E2D45" stroke-width="1"/>
+                <line x1="0" y1="55" x2="520" y2="55" stroke="#1E2D45" stroke-width="1"/>
+                <line x1="0" y1="90" x2="520" y2="90" stroke="#1E2D45" stroke-width="1"/>
+                <line x1="0" y1="125" x2="520" y2="125" stroke="#1E2D45" stroke-width="1"/>
+                <!-- area -->
+                <path class="lc-area" d="M0,110 C40,108 80,95 120,88 C160,80 200,70 240,58 C280,46 320,52 360,42 C400,32 440,28 480,22 L520,20 L520,125 L0,125 Z"/>
+                <!-- line -->
+                <path class="lc-line" d="M0,110 C40,108 80,95 120,88 C160,80 200,70 240,58 C280,46 320,52 360,42 C400,32 440,28 480,22 L520,20"/>
+                <!-- dots -->
+                <circle class="lc-dot" cx="0" cy="110" r="4"/>
+                <circle class="lc-dot" cx="86" cy="88" r="4"/>
+                <circle class="lc-dot" cx="173" cy="72" r="4"/>
+                <circle class="lc-dot" cx="260" cy="58" r="4"/>
+                <circle class="lc-dot" cx="346" cy="42" r="4"/>
+                <circle class="lc-dot" cx="433" cy="26" r="4"/>
+                <circle class="lc-dot" cx="520" cy="20" r="4"/>
+              </svg>
+            </div>
+            <div class="lc-labels">
+              <span class="lc-lbl">Jan</span><span class="lc-lbl">Fév</span><span class="lc-lbl">Mar</span><span class="lc-lbl">Avr</span><span class="lc-lbl">Mai</span><span class="lc-lbl">Jun</span><span class="lc-lbl">Jul</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Donut: domaines -->
+        <div class="card">
+          <div class="card-hdr">
+            <div><div class="card-title">Domaines populaires</div><div class="card-sub">Répartition des candidatures</div></div>
+          </div>
+          <div class="card-body">
+            <div class="donut-wrap">
+              <svg width="110" height="110" viewBox="0 0 110 110">
+                <!-- Donut segments -->
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#1E2D45" stroke-width="18"/>
+                <!-- Tech 34% -->
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#1A6FFF" stroke-width="18" stroke-dasharray="85.4 165.9" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 55 55)"/>
+                <!-- Finance 22% -->
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#00C47C" stroke-width="18" stroke-dasharray="55.3 196" stroke-dashoffset="-85.4" stroke-linecap="round" transform="rotate(-90 55 55)"/>
+                <!-- Marketing 18% -->
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#7B61FF" stroke-width="18" stroke-dasharray="45.2 206.1" stroke-dashoffset="-140.7" stroke-linecap="round" transform="rotate(-90 55 55)"/>
+                <!-- Autres 26% -->
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#253550" stroke-width="18" stroke-dasharray="65.3 186" stroke-dashoffset="-185.9" stroke-linecap="round" transform="rotate(-90 55 55)"/>
+                <text x="55" y="52" text-anchor="middle" fill="#F0F4FF" font-size="16" font-weight="700" font-family="DM Mono,monospace">34%</text>
+                <text x="55" y="66" text-anchor="middle" fill="#8A9BBE" font-size="9" font-family="DM Sans,sans-serif">Tech #1</text>
+              </svg>
+              <div class="donut-legend">
+                <div class="dl-item"><div class="dl-color" style="background:#1A6FFF"></div>Tech & Digital<div class="dl-val">34%</div></div>
+                <div class="dl-item"><div class="dl-color" style="background:#00C47C"></div>Finance & Banque<div class="dl-val">22%</div></div>
+                <div class="dl-item"><div class="dl-color" style="background:#7B61FF"></div>Marketing<div class="dl-val">18%</div></div>
+                <div class="dl-item"><div class="dl-color" style="background:#253550"></div>Autres<div class="dl-val">26%</div></div>
+              </div>
+            </div>
+            <div style="height:1px;background:var(--border);margin:14px 0 12px"></div>
+            <div style="display:flex;justify-content:space-between">
+              <div style="text-align:center"><div style="font-size:16px;font-weight:700;font-family:var(--mono)">12</div><div style="font-size:10px;color:var(--text3)">Domaines</div></div>
+              <div style="text-align:center"><div style="font-size:16px;font-weight:700;font-family:var(--mono)">384</div><div style="font-size:10px;color:var(--text3)">Offres</div></div>
+              <div style="text-align:center"><div style="font-size:16px;font-weight:700;font-family:var(--mono);color:var(--green)">94%</div><div style="font-size:10px;color:var(--text3)">Match moyen</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom row -->
+      <div class="two-col">
+        <!-- Bar chart: candidatures par ville -->
+        <div class="card">
+          <div class="card-hdr">
+            <div><div class="card-title">Candidatures par ville</div><div class="card-sub">Top villes — 30 jours</div></div>
+          </div>
+          <div class="card-body">
+            <div class="bar-chart" id="barChart">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity feed -->
+        <div class="card">
+          <div class="card-hdr">
+            <div><div class="card-title">Activité récente</div><div class="card-sub">Événements système en direct</div></div>
+            <span class="dot-live"></span>
+          </div>
+          <div id="activityFeed">
+            <div class="activity-item"><div class="act-dot" style="background:var(--green)"></div><div class="act-text"><strong>Moussa B.</strong> a posté une nouvelle offre — Dev Full Stack</div><div class="act-time">09:42</div></div>
+            <div class="activity-item"><div class="act-dot" style="background:var(--blue)"></div><div class="act-text"><strong>Fatoumata D.</strong> s'est inscrite via Google</div><div class="act-time">09:38</div></div>
+            <div class="activity-item"><div class="act-dot" style="background:var(--purple)"></div><div class="act-text"><strong>Ecobank GN</strong> a passé au plan <strong>Premium RH</strong></div><div class="act-time">09:31</div></div>
+            <div class="activity-item"><div class="act-dot" style="background:var(--yellow)"></div><div class="act-text"><strong>Ibrahim K.</strong> a postulé avec l'IA — Chef Projet MTN</div><div class="act-time">09:27</div></div>
+            <div class="activity-item"><div class="act-dot" style="background:var(--red)"></div><div class="act-text">Signalement : offre #0283 marquée frauduleuse</div><div class="act-time">09:15</div></div>
+            <div class="activity-item"><div class="act-dot" style="background:var(--green)"></div><div class="act-text"><strong>Orange Guinée</strong> a planifié 2 entretiens</div><div class="act-time">09:02</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ PAGE: UTILISATEURS ════ -->
+    <div class="page" id="page-users">
+      <div class="page-hdr">
+        <div><div class="ph-title">Utilisateurs</div><div class="ph-sub">Gestion des comptes · 2 841 inscrits</div></div>
+        <div class="ph-actions">
+          <button class="fb-btn ghost">↓ Exporter CSV</button>
+          <button class="fb-btn primary">+ Inviter</button>
+        </div>
+      </div>
+      <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+        <div class="kpi"><div class="kpi-icon" style="background:var(--blue-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#1A6FFF" stroke-width="2"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#1A6FFF" stroke-width="2" stroke-linecap="round"/></svg></div><div class="kpi-val">2 841</div><div class="kpi-label">Total inscrits</div><div class="kpi-trend up">↑ +214 ce mois</div></div>
+        <div class="kpi"><div class="kpi-icon" style="background:var(--green-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#00C47C" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="#00C47C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="kpi-val">1 438</div><div class="kpi-label">Profils complets</div><div class="kpi-trend up">↑ 50.6% du total</div></div>
+        <div class="kpi"><div class="kpi-icon" style="background:var(--purple-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17 5.8 21.3l2.4-7.4L2 9.4h7.6L12 2z" stroke="#7B61FF" stroke-width="2" stroke-linejoin="round"/></svg></div><div class="kpi-val">347</div><div class="kpi-label">Abonnés Premium</div><div class="kpi-trend up">↑ 12.2%</div></div>
+        <div class="kpi"><div class="kpi-icon" style="background:var(--red-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#FF4757" stroke-width="2"/><path d="M15 9l-6 6M9 9l6 6" stroke="#FF4757" stroke-width="2" stroke-linecap="round"/></svg></div><div class="kpi-val">28</div><div class="kpi-label">Comptes suspendus</div><div class="kpi-trend down">↓ -3 cette semaine</div></div>
+      </div>
+      <div class="filter-bar">
+        <input class="fb-input" placeholder="Rechercher utilisateur, email…">
+        <select class="fb-select"><option>Tous les statuts</option><option>Actif</option><option>Premium</option><option>Suspendu</option></select>
+        <select class="fb-select"><option>Tous les domaines</option><option>Tech</option><option>Finance</option><option>RH</option></select>
+        <div class="fb-spacer"></div>
+        <button class="fb-btn ghost">Filtrer</button>
+      </div>
+      <div class="card">
+        <table class="tbl">
+          <thead><tr>
+            <th>Utilisateur</th><th>Email</th><th>Inscription</th><th>Statut</th><th>Candidatures</th><th>Domaine</th><th>Actions</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:9px"><div class="user-ava" style="background:linear-gradient(135deg,#1A6FFF,#0038C4);color:#fff;font-size:11px">MC</div><div class="td-bold">Mouhammad Camara</div></div></td>
+              <td class="td-mono">m.camara@gmail.com</td>
+              <td class="td-mono">12 Jan 2025</td>
+              <td><span class="badge green"><span class="badge-dot"></span>Actif</span></td>
+              <td class="td-bold td-mono">12</td>
+              <td><span class="badge blue">Tech</span></td>
+              <td><button class="ca-btn ghost" style="font-size:10px">Voir</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:9px"><div class="user-ava" style="background:linear-gradient(135deg,#00C47C,#007A4D);color:#fff;font-size:11px">FD</div><div class="td-bold">Fatoumata Diallo</div></div></td>
+              <td class="td-mono">fdiallo@yahoo.fr</td>
+              <td class="td-mono">8 Jan 2025</td>
+              <td><span class="badge purple"><span class="badge-dot"></span>Premium</span></td>
+              <td class="td-bold td-mono">7</td>
+              <td><span class="badge green">Finance</span></td>
+              <td><button class="ca-btn ghost" style="font-size:10px">Voir</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:9px"><div class="user-ava" style="background:linear-gradient(135deg,#FFB800,#FF6B00);color:#fff;font-size:11px">IK</div><div class="td-bold">Ibrahim Konaté</div></div></td>
+              <td class="td-mono">i.konate@email.com</td>
+              <td class="td-mono">3 Jan 2025</td>
+              <td><span class="badge green"><span class="badge-dot"></span>Actif</span></td>
+              <td class="td-bold td-mono">4</td>
+              <td><span class="badge yellow">Marketing</span></td>
+              <td><button class="ca-btn ghost" style="font-size:10px">Voir</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:9px"><div class="user-ava" style="background:linear-gradient(135deg,#7B61FF,#4A0FBB);color:#fff;font-size:11px">AB</div><div class="td-bold">Aminata Barry</div></div></td>
+              <td class="td-mono">a.barry@orange.gn</td>
+              <td class="td-mono">29 Déc 2024</td>
+              <td><span class="badge purple"><span class="badge-dot"></span>Premium</span></td>
+              <td class="td-bold td-mono">19</td>
+              <td><span class="badge blue">RH</span></td>
+              <td><button class="ca-btn ghost" style="font-size:10px">Voir</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:9px"><div class="user-ava" style="background:linear-gradient(135deg,#FF4757,#C01F2F);color:#fff;font-size:11px">SD</div><div class="td-bold">Seydou Doumbouya</div></div></td>
+              <td class="td-mono">sdoumbouya@mtn.gn</td>
+              <td class="td-mono">15 Déc 2024</td>
+              <td><span class="badge red"><span class="badge-dot"></span>Suspendu</span></td>
+              <td class="td-bold td-mono">2</td>
+              <td><span class="badge blue">Commerce</span></td>
+              <td><button class="ca-btn ghost" style="font-size:10px">Voir</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:9px"><div class="user-ava" style="background:linear-gradient(135deg,#00B4D8,#0077A8);color:#fff;font-size:11px">MB</div><div class="td-bold">Mariama Baldé</div></div></td>
+              <td class="td-mono">m.balde@bicigui.gn</td>
+              <td class="td-mono">10 Déc 2024</td>
+              <td><span class="badge green"><span class="badge-dot"></span>Actif</span></td>
+              <td class="td-bold td-mono">8</td>
+              <td><span class="badge green">Finance</span></td>
+              <td><button class="ca-btn ghost" style="font-size:10px">Voir</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span class="pg-info">Affichage de 1–6 sur 2 841 utilisateurs</span>
+          <div class="pg-btns">
+            <button class="pg-btn">‹</button>
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn">2</button>
+            <button class="pg-btn">3</button>
+            <button class="pg-btn">…</button>
+            <button class="pg-btn">474</button>
+            <button class="pg-btn">›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ PAGE: OFFRES ════ -->
+    <div class="page" id="page-offres">
+      <div class="page-hdr">
+        <div><div class="ph-title">Offres d'emploi</div><div class="ph-sub">Gestion et modération des offres · 384 actives</div></div>
+        <div class="ph-actions">
+          <button class="fb-btn ghost">↓ Exporter</button>
+          <button class="fb-btn primary">+ Nouvelle offre</button>
+        </div>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-icon" style="background:var(--green-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#00C47C" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="#00C47C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="kpi-val">384</div><div class="kpi-label">Offres actives</div><div class="kpi-trend up">↑ +24 cette semaine</div></div>
+        <div class="kpi"><div class="kpi-icon" style="background:var(--yellow-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#FFB800" stroke-width="2"/><path d="M12 8v4l3 3" stroke="#FFB800" stroke-width="2" stroke-linecap="round"/></svg></div><div class="kpi-val">47</div><div class="kpi-label">En attente</div><div class="kpi-trend neutral">→ À valider</div></div>
+        <div class="kpi"><div class="kpi-icon" style="background:var(--red-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#FF4757" stroke-width="2"/><path d="M15 9l-6 6M9 9l6 6" stroke="#FF4757" stroke-width="2" stroke-linecap="round"/></svg></div><div class="kpi-val">12</div><div class="kpi-label">Signalées</div><div class="kpi-trend down">↓ 3 nouvelles</div></div>
+        <div class="kpi"><div class="kpi-icon" style="background:var(--blue-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17 5.8 21.3l2.4-7.4L2 9.4h7.6L12 2z" stroke="#1A6FFF" stroke-width="2" stroke-linejoin="round"/></svg></div><div class="kpi-val">89</div><div class="kpi-label">Offres Premium</div><div class="kpi-trend up">↑ +5 ce mois</div></div>
+      </div>
+      <div class="filter-bar">
+        <input class="fb-input" placeholder="Titre, entreprise, secteur…">
+        <select class="fb-select"><option>Tous statuts</option><option>Active</option><option>En attente</option><option>Signalée</option><option>Expirée</option></select>
+        <select class="fb-select"><option>Tous types</option><option>CDI</option><option>CDD</option><option>Stage</option></select>
+        <select class="fb-select"><option>Toutes villes</option><option>Conakry</option><option>Labé</option><option>Kindia</option></select>
+        <div class="fb-spacer"></div>
+        <button class="fb-btn ghost">Réinitialiser</button>
+        <button class="fb-btn primary">Filtrer</button>
+      </div>
+      <div class="card">
+        <table class="tbl">
+          <thead><tr>
+            <th>Offre</th><th>Entreprise</th><th>Type</th><th>Candidatures</th><th>Vues</th><th>Statut</th><th>Expire</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="offresTable">
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:9px"><div style="width:30px;height:30px;border-radius:8px;background:#1A2235;display:flex;align-items:center;justify-content:center;font-size:14px">🟠</div><div class="td-bold">Chef de Projet Digital</div></div></td>
+              <td style="color:var(--text)">Orange Guinée</td>
+              <td><span class="badge blue">CDI</span></td>
+              <td class="td-mono td-bold">47</td>
+              <td class="td-mono">1 204</td>
+              <td><span class="badge green"><span class="badge-dot"></span>Active</span></td>
+              <td class="td-mono" style="color:var(--yellow)">5j</td>
+              <td style="display:flex;gap:5px"><button class="ca-btn ghost" style="font-size:10px">Voir</button><button class="ca-btn ghost" style="font-size:10px;color:var(--red);border-color:var(--red-dim)">Suspend.</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:9px"><div style="width:30px;height:30px;border-radius:8px;background:#1A2235;display:flex;align-items:center;justify-content:center;font-size:14px">💻</div><div class="td-bold">Développeur Full Stack</div></div></td>
+              <td style="color:var(--text)">Sotelgui</td>
+              <td><span class="badge blue">CDI</span></td>
+              <td class="td-mono td-bold">23</td>
+              <td class="td-mono">856</td>
+              <td><span class="badge green"><span class="badge-dot"></span>Active</span></td>
+              <td class="td-mono" style="color:var(--text3)">12j</td>
+              <td style="display:flex;gap:5px"><button class="ca-btn ghost" style="font-size:10px">Voir</button><button class="ca-btn ghost" style="font-size:10px;color:var(--red);border-color:var(--red-dim)">Suspend.</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:9px"><div style="width:30px;height:30px;border-radius:8px;background:#1A2235;display:flex;align-items:center;justify-content:center;font-size:14px">📣</div><div class="td-bold">Responsable Marketing</div></div></td>
+              <td style="color:var(--text)">Sabari Group</td>
+              <td><span class="badge yellow">CDD</span></td>
+              <td class="td-mono td-bold">61</td>
+              <td class="td-mono">2 015</td>
+              <td><span class="badge yellow"><span class="badge-dot"></span>En attente</span></td>
+              <td class="td-mono" style="color:var(--text3)">8j</td>
+              <td style="display:flex;gap:5px"><button class="ca-btn primary" style="font-size:10px">Valider</button><button class="ca-btn ghost" style="font-size:10px;color:var(--red);border-color:var(--red-dim)">Refuser</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:9px"><div style="width:30px;height:30px;border-radius:8px;background:#1A2235;display:flex;align-items:center;justify-content:center;font-size:14px">🏦</div><div class="td-bold">Comptable Senior SYSCOHADA</div></div></td>
+              <td style="color:var(--text)">BICIGUI</td>
+              <td><span class="badge blue">CDI</span></td>
+              <td class="td-mono td-bold">15</td>
+              <td class="td-mono">623</td>
+              <td><span class="badge green"><span class="badge-dot"></span>Active</span></td>
+              <td class="td-mono" style="color:var(--red)">3j !</td>
+              <td style="display:flex;gap:5px"><button class="ca-btn ghost" style="font-size:10px">Voir</button><button class="ca-btn ghost" style="font-size:10px;color:var(--red);border-color:var(--red-dim)">Suspend.</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:9px"><div style="width:30px;height:30px;border-radius:8px;background:#1A2235;display:flex;align-items:center;justify-content:center;font-size:14px">⚠️</div><div class="td-bold">Opérateur de Saisie</div></div></td>
+              <td style="color:var(--text)">Inconnu SRL</td>
+              <td><span class="badge blue">CDI</span></td>
+              <td class="td-mono td-bold">88</td>
+              <td class="td-mono">4 420</td>
+              <td><span class="badge red"><span class="badge-dot"></span>Signalée</span></td>
+              <td class="td-mono" style="color:var(--text3)">2j</td>
+              <td style="display:flex;gap:5px"><button class="ca-btn ghost" style="font-size:10px">Enquêter</button><button class="ca-btn ghost" style="font-size:10px;color:var(--red);border-color:var(--red-dim)">Suppr.</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span class="pg-info">Affichage de 1–5 sur 384 offres</span>
+          <div class="pg-btns">
+            <button class="pg-btn">‹</button>
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn">2</button>
+            <button class="pg-btn">3</button>
+            <button class="pg-btn">›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ PAGE: CANDIDATURES ════ -->
+    <div class="page" id="page-candidatures">
+      <div class="page-hdr">
+        <div><div class="ph-title">Candidatures</div><div class="ph-sub">Suivi de toutes les candidatures · 1 207 ce mois</div></div>
+        <div class="ph-actions"><button class="fb-btn ghost">↓ Exporter</button></div>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-val td-blue">1 207</div><div class="kpi-label">Total ce mois</div><div class="kpi-trend up">↑ 23.1%</div></div>
+        <div class="kpi"><div class="kpi-val" style="color:var(--green)">312</div><div class="kpi-label">Entretiens planifiés</div><div class="kpi-trend up">↑ +48 cette semaine</div></div>
+        <div class="kpi"><div class="kpi-val" style="color:var(--yellow)">284</div><div class="kpi-label">En attente réponse</div><div class="kpi-trend neutral">→ Stable</div></div>
+        <div class="kpi"><div class="kpi-val" style="color:var(--purple)">89</div><div class="kpi-label">Via IA (auto-apply)</div><div class="kpi-trend up">↑ 7.4% du total</div></div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div><div class="card-title">Flux des candidatures</div><div class="card-sub">Toutes les candidatures récentes</div></div><div class="card-actions"><input class="fb-input" style="width:180px;padding:5px 11px;font-size:11px" placeholder="Rechercher…"></div></div>
+        <table class="tbl">
+          <thead><tr><th>Candidat</th><th>Poste</th><th>Entreprise</th><th>Date</th><th>Statut</th><th>Progression</th><th>Type</th></tr></thead>
+          <tbody>
+            <tr><td class="td-bold">Mouhammad Camara</td><td>Chef de Projet Digital</td><td>Orange Guinée</td><td class="td-mono">15 Jan 25</td><td><span class="badge green"><span class="badge-dot"></span>Entretien</span></td><td><div style="width:100px"><div class="prog"><div class="prog-fill" style="width:75%;background:var(--green)"></div></div><div style="font-size:9px;color:var(--text3);margin-top:2px">75%</div></div></td><td><span class="badge blue">Standard</span></td></tr>
+            <tr><td class="td-bold">Aminata Barry</td><td>Comptable Senior</td><td>BICIGUI</td><td class="td-mono">10 Jan 25</td><td><span class="badge yellow"><span class="badge-dot"></span>En révision</span></td><td><div style="width:100px"><div class="prog"><div class="prog-fill" style="width:50%;background:var(--yellow)"></div></div><div style="font-size:9px;color:var(--text3);margin-top:2px">50%</div></div></td><td><span class="badge purple">IA Auto</span></td></tr>
+            <tr><td class="td-bold">Ibrahim Konaté</td><td>Commercial B2B</td><td>MTN Guinée</td><td class="td-mono">8 Jan 25</td><td><span class="badge blue"><span class="badge-dot"></span>Envoyée</span></td><td><div style="width:100px"><div class="prog"><div class="prog-fill" style="width:25%;background:var(--blue)"></div></div><div style="font-size:9px;color:var(--text3);margin-top:2px">25%</div></div></td><td><span class="badge blue">Standard</span></td></tr>
+            <tr><td class="td-bold">Fatoumata Diallo</td><td>Analyste Financier</td><td>Ecobank Guinée</td><td class="td-mono">5 Jan 25</td><td><span class="badge red"><span class="badge-dot"></span>Refusée</span></td><td><div style="width:100px"><div class="prog"><div class="prog-fill" style="width:60%;background:var(--red)"></div></div><div style="font-size:9px;color:var(--text3);margin-top:2px">60%</div></div></td><td><span class="badge purple">IA Auto</span></td></tr>
+            <tr><td class="td-bold">Mariama Baldé</td><td>Chargée RH & Paie</td><td>Jess Holding</td><td class="td-mono">3 Jan 25</td><td><span class="badge green"><span class="badge-dot"></span>Entretien</span></td><td><div style="width:100px"><div class="prog"><div class="prog-fill" style="width:80%;background:var(--green)"></div></div><div style="font-size:9px;color:var(--text3);margin-top:2px">80%</div></div></td><td><span class="badge blue">Standard</span></td></tr>
+          </tbody>
+        </table>
+        <div class="pagination"><span class="pg-info">1–5 sur 1 207 candidatures</span><div class="pg-btns"><button class="pg-btn">‹</button><button class="pg-btn active">1</button><button class="pg-btn">2</button><button class="pg-btn">3</button><button class="pg-btn">›</button></div></div>
+      </div>
+    </div>
+
+    <!-- ════ PAGE: ENTREPRISES ════ -->
+    <div class="page" id="page-entreprises">
+      <div class="page-hdr">
+        <div><div class="ph-title">Entreprises</div><div class="ph-sub">Recruteurs & partenaires sur Worka</div></div>
+        <div class="ph-actions"><button class="fb-btn primary">+ Ajouter</button></div>
+      </div>
+      <div class="three-col">
+        <div class="card"><div class="card-hdr"><div class="card-title">Orange Guinée</div><div class="card-sub">Télécommunications · Premium</div></div><div class="card-body"><div class="mini-stats"><div class="mini-stat"><div class="ms-val td-blue">8</div><div class="ms-lbl">Offres actives</div></div><div class="mini-stat"><div class="ms-val" style="color:var(--green)">312</div><div class="ms-lbl">Candidatures reçues</div></div><div class="mini-stat"><div class="ms-val">🟠</div><div class="ms-lbl">Logo</div></div><div class="mini-stat"><div class="ms-val"><span class="badge purple">Premium</span></div><div class="ms-lbl">Plan</div></div></div></div></div>
+        <div class="card"><div class="card-hdr"><div class="card-title">BICIGUI</div><div class="card-sub">Banque & Finance</div></div><div class="card-body"><div class="mini-stats"><div class="mini-stat"><div class="ms-val td-blue">3</div><div class="ms-lbl">Offres actives</div></div><div class="mini-stat"><div class="ms-val" style="color:var(--green)">87</div><div class="ms-lbl">Candidatures reçues</div></div><div class="mini-stat"><div class="ms-val">🏦</div><div class="ms-lbl">Logo</div></div><div class="mini-stat"><div class="ms-val"><span class="badge blue">Standard</span></div><div class="ms-lbl">Plan</div></div></div></div></div>
+        <div class="card"><div class="card-hdr"><div class="card-title">MTN Guinée</div><div class="card-sub">Télécommunications · Premium</div></div><div class="card-body"><div class="mini-stats"><div class="mini-stat"><div class="ms-val td-blue">6</div><div class="ms-lbl">Offres actives</div></div><div class="mini-stat"><div class="ms-val" style="color:var(--green)">204</div><div class="ms-lbl">Candidatures reçues</div></div><div class="mini-stat"><div class="ms-val">🟡</div><div class="ms-lbl">Logo</div></div><div class="mini-stat"><div class="ms-val"><span class="badge purple">Premium</span></div><div class="ms-lbl">Plan</div></div></div></div></div>
+      </div>
+    </div>
+
+    <!-- ════ PAGE: PREMIUM ════ -->
+    <div class="page" id="page-premium">
+      <div class="page-hdr">
+        <div><div class="ph-title">Abonnés Premium</div><div class="ph-sub">Gestion des abonnements · 347 actifs</div></div>
+        <div class="ph-actions"><button class="fb-btn ghost">↓ Rapport MRR</button></div>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-icon" style="background:var(--purple-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17 5.8 21.3l2.4-7.4L2 9.4h7.6L12 2z" stroke="#7B61FF" stroke-width="2" stroke-linejoin="round"/></svg></div><div class="kpi-val">347</div><div class="kpi-label">Abonnés actifs</div><div class="kpi-trend up">↑ +39 ce mois</div></div>
+        <div class="kpi"><div class="kpi-icon" style="background:var(--green-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" stroke="#00C47C" stroke-width="2"/><path d="M12 6v6l4 2" stroke="#00C47C" stroke-width="2" stroke-linecap="round"/></svg></div><div class="kpi-val">3.1M</div><div class="kpi-label">MRR (GNF)</div><div class="kpi-trend up">↑ 18.3%</div></div>
+        <div class="kpi"><div class="kpi-icon" style="background:var(--yellow-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 3h18M3 12h18M3 21h18" stroke="#FFB800" stroke-width="2" stroke-linecap="round"/></svg></div><div class="kpi-val">8 925</div><div class="kpi-label">GNF / abonné</div><div class="kpi-trend neutral">→ Stable</div></div>
+        <div class="kpi"><div class="kpi-icon" style="background:var(--red-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 8l4 4-4 4M7 8l-4 4 4 4M14 4l-4 16" stroke="#FF4757" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="kpi-val">4.2%</div><div class="kpi-label">Taux de désabonnement</div><div class="kpi-trend down">↓ -1.1% vs mois dernier</div></div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">Abonnés récents</div><div class="card-sub">Derniers utilisateurs passés en Premium</div></div>
+        <table class="tbl">
+          <thead><tr><th>Utilisateur</th><th>Début abonnement</th><th>Plan</th><th>Paiement</th><th>Renouvellement</th><th>Statut</th></tr></thead>
+          <tbody>
+            <tr><td class="td-bold">Aminata Barry</td><td class="td-mono">12 Jan 2025</td><td><span class="badge purple">Premium Mensuel</span></td><td class="td-mono td-green">8 925 GNF</td><td class="td-mono">12 Fév 2025</td><td><span class="badge green"><span class="badge-dot"></span>Actif</span></td></tr>
+            <tr><td class="td-bold">Fatoumata Diallo</td><td class="td-mono">8 Jan 2025</td><td><span class="badge purple">Premium Mensuel</span></td><td class="td-mono td-green">8 925 GNF</td><td class="td-mono">8 Fév 2025</td><td><span class="badge green"><span class="badge-dot"></span>Actif</span></td></tr>
+            <tr><td class="td-bold">Ecobank Guinée RH</td><td class="td-mono">1 Jan 2025</td><td><span class="badge yellow">Premium RH Pro</span></td><td class="td-mono td-green">45 000 GNF</td><td class="td-mono">1 Fév 2025</td><td><span class="badge green"><span class="badge-dot"></span>Actif</span></td></tr>
+            <tr><td class="td-bold">Mamadou Sylla</td><td class="td-mono">28 Déc 2024</td><td><span class="badge purple">Premium Mensuel</span></td><td class="td-mono td-red">Échoué</td><td class="td-mono">28 Jan 2025</td><td><span class="badge red"><span class="badge-dot"></span>Échec paiement</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════ PAGE: REVENUS ════ -->
+    <div class="page" id="page-revenus">
+      <div class="page-hdr">
+        <div><div class="ph-title">Revenus</div><div class="ph-sub">Tableau financier · GNF</div></div>
+        <div class="ph-actions"><button class="fb-btn ghost">↓ Rapport comptable</button></div>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-val" style="color:var(--green)">37.2M</div><div class="kpi-label">Revenu total Jan 2025 (GNF)</div><div class="kpi-trend up">↑ 22.4% vs Dec</div></div>
+        <div class="kpi"><div class="kpi-val">3.1M</div><div class="kpi-label">MRR Premium</div><div class="kpi-trend up">↑ 18.3%</div></div>
+        <div class="kpi"><div class="kpi-val">28.4M</div><div class="kpi-label">Revenus publicitaires</div><div class="kpi-trend up">↑ 31.2%</div></div>
+        <div class="kpi"><div class="kpi-val">5.7M</div><div class="kpi-label">Offres boostées</div><div class="kpi-trend up">↑ 12.8%</div></div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">Évolution du revenu mensuel</div></div>
+        <div class="card-body">
+          <div class="bar-chart" id="revenusChart" style="height:160px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ PAGE: PUBS ════ -->
+    <div class="page" id="page-pubs">
+      <div class="page-hdr">
+        <div><div class="ph-title">Publicités</div><div class="ph-sub">Campagnes publicitaires en cours</div></div>
+        <div class="ph-actions"><button class="fb-btn primary">+ Nouvelle campagne</button></div>
+      </div>
+      <div class="card">
+        <table class="tbl">
+          <thead><tr><th>Annonceur</th><th>Type</th><th>Budget (GNF)</th><th>Impressions</th><th>Clics</th><th>CTR</th><th>Statut</th><th>Fin</th></tr></thead>
+          <tbody>
+            <tr><td><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">🏫</span><span class="td-bold">EduNova Guinée</span></div></td><td><span class="badge blue">In-feed</span></td><td class="td-mono td-green">2 500 000</td><td class="td-mono">48 240</td><td class="td-mono">2 184</td><td class="td-mono td-blue">4.5%</td><td><span class="badge green"><span class="badge-dot"></span>Active</span></td><td class="td-mono">31 Jan</td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">🏦</span><span class="td-bold">Crédit Solidaire GN</span></div></td><td><span class="badge yellow">Banner</span></td><td class="td-mono td-green">1 200 000</td><td class="td-mono">22 100</td><td class="td-mono">884</td><td class="td-mono td-blue">4.0%</td><td><span class="badge green"><span class="badge-dot"></span>Active</span></td><td class="td-mono">28 Jan</td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">📱</span><span class="td-bold">Orange Money Pro</span></div></td><td><span class="badge blue">In-feed</span></td><td class="td-mono td-green">3 000 000</td><td class="td-mono">61 008</td><td class="td-mono">3 294</td><td class="td-mono td-blue">5.4%</td><td><span class="badge yellow"><span class="badge-dot"></span>En pause</span></td><td class="td-mono">15 Fév</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════ PAGE: MODÉRATION ════ -->
+    <div class="page" id="page-moderation">
+      <div class="page-hdr">
+        <div><div class="ph-title">Modération</div><div class="ph-sub">Signalements & sécurité · <span style="color:var(--red)">7 cas urgents</span></div></div>
+        <div class="ph-actions"><button class="fb-btn ghost">Historique</button></div>
+      </div>
+      <div class="kpi-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi"><div class="kpi-val" style="color:var(--red)">7</div><div class="kpi-label">Signalements actifs</div><div class="kpi-trend down">⚠ Traitement requis</div></div>
+        <div class="kpi"><div class="kpi-val">28</div><div class="kpi-label">Comptes suspendus</div><div class="kpi-trend neutral">→ Stable cette semaine</div></div>
+        <div class="kpi"><div class="kpi-val td-green">94%</div><div class="kpi-label">Résolution < 24h</div><div class="kpi-trend up">↑ Bonne performance</div></div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">Signalements en attente</div></div>
+        <table class="tbl">
+          <thead><tr><th>Type</th><th>Contenu signalé</th><th>Signalé par</th><th>Date</th><th>Priorité</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge red">Offre frauduleuse</span></td><td class="td-bold">Opérateur de Saisie — Inconnu SRL</td><td>3 utilisateurs</td><td class="td-mono">13 Jan</td><td><span class="badge red">Haute</span></td><td style="display:flex;gap:5px"><button class="ca-btn ghost" style="font-size:10px">Enquêter</button><button class="ca-btn ghost" style="font-size:10px;color:var(--red)">Suppr.</button></td></tr>
+            <tr><td><span class="badge yellow">Spam messages</span></td><td class="td-bold">Compte: sdoumbouya@mtn.gn</td><td>5 utilisateurs</td><td class="td-mono">12 Jan</td><td><span class="badge red">Haute</span></td><td style="display:flex;gap:5px"><button class="ca-btn ghost" style="font-size:10px">Suspendre</button><button class="ca-btn ghost" style="font-size:10px">Ignorer</button></td></tr>
+            <tr><td><span class="badge blue">Faux profil</span></td><td class="td-bold">Profil: "Recruteur Expert RH"</td><td>1 utilisateur</td><td class="td-mono">11 Jan</td><td><span class="badge yellow">Moyenne</span></td><td style="display:flex;gap:5px"><button class="ca-btn ghost" style="font-size:10px">Vérifier</button><button class="ca-btn ghost" style="font-size:10px">Ignorer</button></td></tr>
+            <tr><td><span class="badge yellow">Contenu inapproprié</span></td><td class="td-bold">Description offre #0291</td><td>2 utilisateurs</td><td class="td-mono">10 Jan</td><td><span class="badge yellow">Moyenne</span></td><td style="display:flex;gap:5px"><button class="ca-btn primary" style="font-size:10px">Modifier</button><button class="ca-btn ghost" style="font-size:10px">Ignorer</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════ PAGE: PARAMÈTRES ════ -->
+    <div class="page" id="page-settings">
+      <div class="page-hdr">
+        <div><div class="ph-title">Paramètres</div><div class="ph-sub">Configuration de la plateforme Worka</div></div>
+        <div class="ph-actions"><button class="fb-btn primary">Sauvegarder</button></div>
+      </div>
+      <div class="two-col" style="grid-template-columns:1fr 1fr">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Notifications & Alertes</div></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:600;color:var(--text)">Alertes de modération</div><div style="font-size:11px;color:var(--text3)">Signalements critiques</div></div><button class="switch on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+            <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:600;color:var(--text)">Rapport quotidien</div><div style="font-size:11px;color:var(--text3)">Email résumé 08h00</div></div><button class="switch on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+            <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:600;color:var(--text)">Nouvelles inscriptions</div><div style="font-size:11px;color:var(--text3)">Alerte en temps réel</div></div><button class="switch off" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+            <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:600;color:var(--text)">Alertes de paiement</div><div style="font-size:11px;color:var(--text3)">Paiements Premium échoués</div></div><button class="switch on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Plateforme</div></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:600;color:var(--text)">Mode maintenance</div><div style="font-size:11px;color:var(--text3)">Suspend l'accès public</div></div><button class="switch off" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+            <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:600;color:var(--text)">Validation manuelle des offres</div><div style="font-size:11px;color:var(--text3)">Toutes les offres nécessitent approbation</div></div><button class="switch on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+            <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:600;color:var(--text)">IA auto-apply activée</div><div style="font-size:11px;color:var(--text3)">Candidatures automatiques Premium</div></div><button class="switch on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+            <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:600;color:var(--text)">Mode debug logs</div><div style="font-size:11px;color:var(--text3)">Journaux détaillés API</div></div><button class="switch off" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">Informations système</div></div>
+        <div class="card-body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+          <div class="mini-stat"><div style="font-size:10px;color:var(--text3);margin-bottom:4px">VERSION</div><div style="font-size:13px;font-weight:700;font-family:var(--mono);color:var(--blue2)">v7.0.0-blue</div></div>
+          <div class="mini-stat"><div style="font-size:10px;color:var(--text3);margin-bottom:4px">SERVEUR</div><div style="font-size:13px;font-weight:700;font-family:var(--mono);color:var(--green)">● ONLINE</div></div>
+          <div class="mini-stat"><div style="font-size:10px;color:var(--text3);margin-bottom:4px">DB LATENCE</div><div style="font-size:13px;font-weight:700;font-family:var(--mono)">12ms</div></div>
+          <div class="mini-stat"><div style="font-size:10px;color:var(--text3);margin-bottom:4px">UPTIME</div><div style="font-size:13px;font-weight:700;font-family:var(--mono);color:var(--green)">99.98%</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+// ── Navigation
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  const page = document.getElementById('page-'+id);
+  if(page) page.classList.add('active');
+  // Find and activate sidebar item
+  document.querySelectorAll('.sb-item').forEach(item=>{
+    if(item.getAttribute('onclick') && item.getAttribute('onclick').includes("'"+id+"'")) {
+      item.classList.add('active');
+    }
+  });
+  // Update breadcrumb
+  const labels={dashboard:'Dashboard',users:'Utilisateurs',offres:"Offres d'emploi",candidatures:'Candidatures',entreprises:'Entreprises',premium:'Premium',revenus:'Revenus',pubs:'Publicités',moderation:'Modération',settings:'Paramètres'};
+  document.getElementById('tb-breadcrumb').textContent = labels[id] || id;
+}
+
+// ── Date
+function updateDate(){
+  const now = new Date();
+  const opts = {weekday:'short',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'};
+  document.getElementById('tb-date').textContent = now.toLocaleDateString('fr-FR',opts).replace(',','  ');
+}
+updateDate();
+setInterval(updateDate,30000);
+
+// ── Bar Chart: candidatures
+const barData = [
+  {label:'Conakry',val:748,color:'#1A6FFF'},
+  {label:'Labé',val:142,color:'#2D8DFF'},
+  {label:'Kindia',val:98,color:'#5B8DFF'},
+  {label:'Kankan',val:87,color:'#7B9DFF'},
+  {label:'Boké',val:64,color:'#9BB0FF'},
+  {label:'Coyah',val:41,color:'#B5C4FF'},
+  {label:'Mamou',val:27,color:'#CDD5FF'},
+];
+const maxVal = Math.max(...barData.map(d=>d.val));
+const bc = document.getElementById('barChart');
+if(bc){
+  bc.innerHTML = barData.map(d=>`
+    <div class="bar-wrap">
+      <div class="bar" data-val="${d.val}" style="background:${d.color};height:${Math.round((d.val/maxVal)*100)}%;min-height:4px;border-radius:5px 5px 0 0"></div>
+      <span class="bar-lbl">${d.label}</span>
+    </div>
+  `).join('');
+}
+
+// ── Bar Chart: revenus
+const revData = [
+  {label:'Jul',val:18.2,color:'#1A6FFF'},
+  {label:'Aoû',val:21.4,color:'#1A6FFF'},
+  {label:'Sep',val:19.8,color:'#1A6FFF'},
+  {label:'Oct',val:24.1,color:'#1A6FFF'},
+  {label:'Nov',val:28.7,color:'#1A6FFF'},
+  {label:'Déc',val:30.4,color:'#1A6FFF'},
+  {label:'Jan',val:37.2,color:'#2D8DFF'},
+];
+const maxRev = Math.max(...revData.map(d=>d.val));
+const rc = document.getElementById('revenusChart');
+if(rc){
+  rc.innerHTML = revData.map((d,i)=>`
+    <div class="bar-wrap">
+      <div class="bar" data-val="${d.val}M GNF" style="background:${i===6?'var(--green)':d.color};height:${Math.round((d.val/maxRev)*100)}%;min-height:4px;opacity:${i===6?1:0.6}"></div>
+      <span class="bar-lbl">${d.label}</span>
+    </div>
+  `).join('');
+}
+
+// ── Animate bars on load
+setTimeout(()=>{
+  document.querySelectorAll('.prog-fill').forEach(p=>{
+    const w = p.style.width;
+    p.style.width='0';
+    setTimeout(()=>p.style.width=w,100);
+  });
+},200);
+
+// ── Live activity feed — add items periodically
+const newActivities = [
+  {color:'#1A6FFF',text:'<strong>Lansana C.</strong> a posté son CV via l\'assistant IA'},
+  {color:'#00C47C',text:'<strong>Sotelgui</strong> a renouvelé son abonnement Premium RH'},
+  {color:'#FFB800',text:'<strong>Kaba M.</strong> a sauvegardé 3 offres cette heure'},
+  {color:'#7B61FF',text:'Nouvel entretien planifié — Orange Guinée × Camara'},
+];
+let actIdx = 0;
+setInterval(()=>{
+  const feed = document.getElementById('activityFeed');
+  if(!feed) return;
+  const a = newActivities[actIdx % newActivities.length];
+  const now = new Date();
+  const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const item = document.createElement('div');
+  item.className='activity-item';
+  item.style.cssText='opacity:0;transform:translateX(-10px);transition:all .4s';
+  item.innerHTML=`<div class="act-dot" style="background:${a.color}"></div><div class="act-text">${a.text}</div><div class="act-time">${time}</div>`;
+  feed.insertBefore(item, feed.firstChild);
+  setTimeout(()=>{item.style.opacity='1';item.style.transform='none'},50);
+  if(feed.children.length > 8) feed.removeChild(feed.lastChild);
+  actIdx++;
+}, 6000);
+</script>
+</body>
+</html>
