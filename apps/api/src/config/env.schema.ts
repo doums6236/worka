@@ -21,6 +21,13 @@ export const envSchema = z.object({
   SMS_PROVIDER: z.enum(['mock', 'cinetpay']).default('mock'),
   CINETPAY_API_KEY: z.string().optional(),
   CINETPAY_SITE_ID: z.string().optional(),
+
+  STORAGE_PROVIDER: z.enum(['mock', 'r2']).default('mock'),
+  R2_ACCOUNT_ID: z.string().optional(),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
+  R2_BUCKET: z.string().optional(),
+  R2_PUBLIC_URL: z.string().url().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

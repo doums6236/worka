@@ -1,4 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, BadRequestException } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { sendOtpSchema } from './dto/send-otp.dto';
 import { verifyOtpSchema } from './dto/verify-otp.dto';
@@ -9,6 +10,7 @@ export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
   @Post('send-otp')
+  @Throttle({ default: { limit: 3, ttl: 60_000 } })
   @HttpCode(HttpStatus.OK)
   async sendOtp(@Body() body: unknown) {
     const parsed = sendOtpSchema.safeParse(body);
