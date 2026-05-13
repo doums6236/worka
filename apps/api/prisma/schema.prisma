@@ -20,6 +20,40 @@ enum UserStatus {
   deleted
 }
 
+enum JobType {
+  cdi
+  cdd
+  stage
+  freelance
+}
+
+enum JobStatus {
+  draft
+  pending
+  published
+  closed
+  expired
+}
+
+enum SwipeDirection {
+  left
+  right
+  saved
+}
+
+enum ApplicationStatus {
+  pending
+  viewed
+  shortlisted
+  rejected
+  hired
+}
+
+enum AppliedVia {
+  manual
+  auto_apply
+}
+
 model User {
   id           String     @id @default(uuid())
   phone        String     @unique
@@ -30,5 +64,185 @@ model User {
   updatedAt    DateTime   @updatedAt @map("updated_at")
   lastSeenAt   DateTime?  @map("last_seen_at")
 
+  candidateProfile CandidateProfile?
+  recruiterProfile RecruiterProfile?
+  userDomains      UserDomain[]
+  swipes           Swipe[]
+  applications     Application[]
+
   @@map("users")
+}
+
+model CandidateProfile {
+  id                      String   @id @default(uuid())
+  userId                  String   @unique @map("user_id")
+  firstName               String?  @map("first_name")
+  lastName                String?  @map("last_name")
+  cvUrl                   String?  @map("cv_url")
+  summary                 String?
+  location                String?
+  isPremium               Boolean  @default(false) @map("is_premium")
+  premiumUntil            DateTime? @map("premium_until")
+  aiCreditsRemaining      Int      @default(0) @map("ai_credits_remaining")
+  autoApplyEnabled        Boolean  @default(false) @map("auto_apply_enabled")
+  autoApplyMinMatchScore  Int      @default(80) @map("auto_apply_min_match_score")
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("candidate_profiles")
+}
+
+model RecruiterProfile {
+  id            String    @id @default(uuid())
+  userId        String    @unique @map("user_id")
+  companyId     String?   @map("company_id")
+  roleInCompany String?   @map("role_in_company")
+  verifiedAt    DateTime? @map("verified_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company? @relation(fields: [companyId], references: [id])
+
+  @@map("recruiter_profiles")
+}
+
+model Company {
+  id                String   @id @default(uuid())
+  name              String
+  sector            String
+  logoUrl           String?  @map("logo_url")
+  country           String
+  city              String?
+  description       String?
+  verifiedByAdminId String?  @map("verified_by_admin_id")
+  plan              String   @default("free")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  recruiters RecruiterProfile[]
+  jobs       Job[]
+
+  @@map("companies")
+}
+
+model Domain {
+  id        String   @id @default(uuid())
+  nameFr    String   @map("name_fr")
+  nameEn    String?  @map("name_en")
+  icon      String?
+  parentId  String?  @map("parent_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  parent      Domain?      @relation("DomainHierarchy", fields: [parentId], references: [id])
+  children    Domain[]     @relation("DomainHierarchy")
+  userDomains UserDomain[]
+  skills      Skill[]
+  jobs        Job[]
+
+  @@map("domains")
+}
+
+model UserDomain {
+  id       String @id @default(uuid())
+  userId   String @map("user_id")
+  domainId String @map("domain_id")
+  priority Int
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  domain Domain @relation(fields: [domainId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, domainId])
+  @@unique([userId, priority])
+  @@map("user_domains")
+}
+
+model Skill {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  domainId  String?  @map("domain_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  domain    Domain?    @relation(fields: [domainId], references: [id])
+  jobSkills JobSkill[]
+
+  @@map("skills")
+}
+
+model Job {
+  id               String    @id @default(uuid())
+  companyId        String    @map("company_id")
+  postedByUserId   String    @map("posted_by_user_id")
+  title            String
+  description      String
+  domainId         String    @map("domain_id")
+  salaryMin        Int?      @map("salary_min")
+  salaryMax        Int?      @map("salary_max")
+  currency         String    @default("GNF")
+  location         String?
+  country          String
+  type             JobType
+  status           JobStatus @default(draft)
+  deadline         DateTime?
+  viewCount        Int       @default(0) @map("view_count")
+  applicationCount Int       @default(0) @map("application_count")
+  publishedAt      DateTime? @map("published_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  company      Company       @relation(fields: [companyId], references: [id])
+  domain       Domain        @relation(fields: [domainId], references: [id])
+  jobSkills    JobSkill[]
+  applications Application[]
+  swipes       Swipe[]
+
+  @@index([status, country])
+  @@index([domainId])
+  @@map("jobs")
+}
+
+model JobSkill {
+  jobId   String @map("job_id")
+  skillId String @map("skill_id")
+
+  job   Job   @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id])
+
+  @@id([jobId, skillId])
+  @@map("job_skills")
+}
+
+model Swipe {
+  id                String         @id @default(uuid())
+  candidateUserId   String         @map("candidate_user_id")
+  jobId             String         @map("job_id")
+  direction         SwipeDirection
+  swipedAt          DateTime       @default(now()) @map("swiped_at")
+  matchScoreAtSwipe Int?           @map("match_score_at_swipe")
+
+  candidate User @relation(fields: [candidateUserId], references: [id], onDelete: Cascade)
+  job       Job  @relation(fields: [jobId], references: [id])
+
+  @@unique([candidateUserId, jobId])
+  @@map("swipes")
+}
+
+model Application {
+  id                String            @id @default(uuid())
+  jobId             String            @map("job_id")
+  candidateUserId   String            @map("candidate_user_id")
+  status            ApplicationStatus @default(pending)
+  coverLetterUrl    String?           @map("cover_letter_url")
+  appliedVia        AppliedVia        @default(manual) @map("applied_via")
+  matchScore        Int?              @map("match_score")
+  recruiterViewedAt DateTime?         @map("recruiter_viewed_at")
+  appliedAt         DateTime          @default(now()) @map("applied_at")
+
+  job       Job  @relation(fields: [jobId], references: [id])
+  candidate User @relation(fields: [candidateUserId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, candidateUserId])
+  @@map("applications")
 }

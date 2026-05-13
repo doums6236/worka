@@ -5,12 +5,13 @@ import { AuthService } from './auth.service';
 import { OtpService } from './otp.service';
 import { JwtService } from './jwt.service';
 import { JwtGuard } from './guards/jwt.guard';
+import { RolesGuard } from './guards/roles.guard';
 import { SmsModule } from '../sms/sms.module';
 
 @Module({
   imports: [SmsModule],
   controllers: [AuthController, MeController],
-  providers: [AuthService, OtpService, JwtService, JwtGuard],
-  exports: [JwtService, JwtGuard],
+  providers: [AuthService, OtpService, JwtService, JwtGuard, RolesGuard],
+  exports: [JwtService, JwtGuard, RolesGuard],
 })
 export class AuthModule {}

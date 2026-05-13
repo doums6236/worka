@@ -4,6 +4,8 @@ import { envSchema } from './config/env.schema';
 import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
+import { DomainsModule } from './domains/domains.module';
+import { SkillsModule } from './skills/skills.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { HealthModule } from './health/health.module';
     CommonModule,
     AuthModule,
     HealthModule,
+    DomainsModule,
+    SkillsModule,
   ],
 })
 export class AppModule {}
