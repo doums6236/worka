@@ -1,6 +1,4 @@
-import {
-  Body, Controller, Get, Param, Post, UseGuards, BadRequestException,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards, BadRequestException } from '@nestjs/common';
 import { z } from 'zod';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';

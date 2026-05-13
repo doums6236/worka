@@ -1,8 +1,6 @@
 import { parsePhoneNumberWithError, CountryCode } from 'libphonenumber-js';
 
-const SUPPORTED_COUNTRIES: CountryCode[] = [
-  'GN', 'SN', 'ML', 'CI', 'BF', 'TG', 'BJ', 'NE', 'MR',
-];
+const SUPPORTED_COUNTRIES: CountryCode[] = ['GN', 'SN', 'ML', 'CI', 'BF', 'TG', 'BJ', 'NE', 'MR'];
 
 export function isSupportedCountry(code: string): boolean {
   return (SUPPORTED_COUNTRIES as string[]).includes(code);

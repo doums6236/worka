@@ -22,7 +22,10 @@ export class AuthService {
     return { phone: e164 };
   }
 
-  async verifyOtp(rawPhone: string, code: string): Promise<{
+  async verifyOtp(
+    rawPhone: string,
+    code: string,
+  ): Promise<{
     accessToken: string;
     refreshToken: string;
     user: { id: string; phone: string; role: string; status: string };

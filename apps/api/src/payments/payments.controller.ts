@@ -1,6 +1,14 @@
 import {
-  Body, Controller, Headers, HttpCode, HttpStatus, Post, Req,
-  UnauthorizedException, UseGuards, BadRequestException,
+  Body,
+  Controller,
+  Headers,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  UnauthorizedException,
+  UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { JwtGuard } from '../auth/guards/jwt.guard';
@@ -54,7 +62,8 @@ export class PaymentsController {
     if (!tx) return { ok: true, note: 'unknown_transaction' };
     if (tx.status !== 'pending') return { ok: true, note: 'already_processed' };
 
-    const newStatus = status === 'ACCEPTED' ? 'success' : status === 'REFUSED' ? 'failed' : tx.status;
+    const newStatus =
+      status === 'ACCEPTED' ? 'success' : status === 'REFUSED' ? 'failed' : tx.status;
     const updated = await this.prisma.transaction.update({
       where: { id: tx.id },
       data: { status: newStatus, providerRef },
@@ -66,7 +75,12 @@ export class PaymentsController {
     return { ok: true };
   }
 
-  private async applySuccessSideEffects(tx: { id: string; userId: string; type: string; metadata: unknown }) {
+  private async applySuccessSideEffects(tx: {
+    id: string;
+    userId: string;
+    type: string;
+    metadata: unknown;
+  }) {
     if (tx.type === 'recruiter_offer') {
       const md = tx.metadata as { jobId?: string } | null;
       if (md?.jobId) {

@@ -5,7 +5,10 @@ import { PrismaService } from '../common/prisma.service';
 import { JwtService } from './jwt.service';
 
 describe('AuthService.sendOtp', () => {
-  const mockOtp = { generate: jest.fn(async () => '123456'), verify: jest.fn() } as unknown as OtpService;
+  const mockOtp = {
+    generate: jest.fn(async () => '123456'),
+    verify: jest.fn(),
+  } as unknown as OtpService;
   const mockSms = { sendOtp: jest.fn(async () => undefined) } as unknown as SmsService;
   const mockPrisma = {} as PrismaService;
   const mockJwt = {} as JwtService;
@@ -58,7 +61,10 @@ describe('AuthService.verifyOtp', () => {
     (mockOtp.verify as jest.Mock).mockResolvedValue(true);
     (mockPrisma.user.findUnique as jest.Mock).mockResolvedValue(null);
     (mockPrisma.user.create as jest.Mock).mockResolvedValue({
-      id: 'u-1', phone: '+224622123456', role: 'candidate', status: 'active',
+      id: 'u-1',
+      phone: '+224622123456',
+      role: 'candidate',
+      status: 'active',
     });
     const result = await auth.verifyOtp('+224622123456', '123456');
     expect(mockPrisma.user.create).toHaveBeenCalled();
@@ -70,10 +76,16 @@ describe('AuthService.verifyOtp', () => {
   it('reuses existing user on subsequent verify', async () => {
     (mockOtp.verify as jest.Mock).mockResolvedValue(true);
     (mockPrisma.user.findUnique as jest.Mock).mockResolvedValue({
-      id: 'u-1', phone: '+224622123456', role: 'recruiter', status: 'active',
+      id: 'u-1',
+      phone: '+224622123456',
+      role: 'recruiter',
+      status: 'active',
     });
     (mockPrisma.user.update as jest.Mock).mockResolvedValue({
-      id: 'u-1', phone: '+224622123456', role: 'recruiter', status: 'active',
+      id: 'u-1',
+      phone: '+224622123456',
+      role: 'recruiter',
+      status: 'active',
     });
     const result = await auth.verifyOtp('+224622123456', '123456');
     expect(mockPrisma.user.create).not.toHaveBeenCalled();

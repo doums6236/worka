@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: worka
+          POSTGRES_PASSWORD: worka_ci
+          POSTGRES_DB: worka
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U worka"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://worka:worka_ci@localhost:5432/worka
+      REDIS_URL: redis://localhost:6379
+      NODE_ENV: development
+      JWT_ACCESS_SECRET: ${{ secrets.CI_JWT_ACCESS_SECRET }}
+      JWT_REFRESH_SECRET: ${{ secrets.CI_JWT_REFRESH_SECRET }}
+      JWT_ACCESS_TTL: 15m
+      JWT_REFRESH_TTL: 30d
+      OTP_LENGTH: '6'
+      OTP_TTL_SECONDS: '300'
+      OTP_MAX_ATTEMPTS: '3'
+      OTP_THROTTLE_WINDOW_SECONDS: '900'
+      OTP_THROTTLE_MAX_PER_WINDOW: '3'
+      SMS_PROVIDER: mock
+      STORAGE_PROVIDER: mock
+      CINETPAY_MODE: mock
+      CINETPAY_SECRET_KEY: ci_only_secret_value_for_hmac_tests_64_chars_long_xxxxxxxxxxxxxx
+      PORT: '3000'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Prisma generate
+        run: pnpm --filter @worka/api exec prisma generate
+
+      - name: Prisma migrate deploy
+        run: pnpm --filter @worka/api exec prisma migrate deploy
+
+      - name: Lint
+        run: pnpm --filter @worka/api lint
+
+      - name: Format check
+        run: pnpm --filter @worka/api format:check
+
+      - name: Build
+        run: pnpm --filter @worka/api build
+
+      - name: Unit tests
+        run: pnpm --filter @worka/api test

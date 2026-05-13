@@ -6,7 +6,9 @@ describe('verifyCinetPaySignature', () => {
   const payload = '{"transaction_id":"abc","status":"ACCEPTED"}';
   const validSignature = createHmac('sha256', secret).update(payload).digest('hex');
 
-  beforeEach(() => { process.env.CINETPAY_SECRET_KEY = secret; });
+  beforeEach(() => {
+    process.env.CINETPAY_SECRET_KEY = secret;
+  });
 
   it('accepts a valid signature', () => {
     expect(verifyCinetPaySignature(payload, validSignature)).toBe(true);

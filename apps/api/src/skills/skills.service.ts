@@ -10,7 +10,12 @@ export class SkillsService {
     try {
       return await this.prisma.skill.create({ data });
     } catch (e: unknown) {
-      if (typeof e === 'object' && e !== null && 'code' in e && (e as { code: string }).code === 'P2002') {
+      if (
+        typeof e === 'object' &&
+        e !== null &&
+        'code' in e &&
+        (e as { code: string }).code === 'P2002'
+      ) {
         throw new ConflictException('Skill name already exists');
       }
       throw e;

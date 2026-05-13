@@ -1,6 +1,10 @@
 import {
-  WebSocketGateway, SubscribeMessage, MessageBody, ConnectedSocket,
-  WebSocketServer, OnGatewayConnection,
+  WebSocketGateway,
+  SubscribeMessage,
+  MessageBody,
+  ConnectedSocket,
+  WebSocketServer,
+  OnGatewayConnection,
 } from '@nestjs/websockets';
 import { UseGuards } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
@@ -31,7 +35,10 @@ export class ChatGateway implements OnGatewayConnection {
       (typeof client.handshake.headers?.authorization === 'string'
         ? client.handshake.headers.authorization.replace(/^Bearer\s+/, '')
         : undefined);
-    if (!token) { client.disconnect(true); return; }
+    if (!token) {
+      client.disconnect(true);
+      return;
+    }
     try {
       client.user = this.jwt.verifyAccess(token);
     } catch {
@@ -40,7 +47,10 @@ export class ChatGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('conversation:join')
-  async onJoin(@ConnectedSocket() client: AuthSocket, @MessageBody() data: { conversationId: string }) {
+  async onJoin(
+    @ConnectedSocket() client: AuthSocket,
+    @MessageBody() data: { conversationId: string },
+  ) {
     const userId = client.user?.sub;
     if (!userId) return { error: 'unauthorized' };
     await this.chat.ensureCanParticipate(data.conversationId, userId);
@@ -49,7 +59,10 @@ export class ChatGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('message:send')
-  async onSend(@ConnectedSocket() client: AuthSocket, @MessageBody() data: { conversationId: string; content: string }) {
+  async onSend(
+    @ConnectedSocket() client: AuthSocket,
+    @MessageBody() data: { conversationId: string; content: string },
+  ) {
     const userId = client.user?.sub;
     if (!userId) return { error: 'unauthorized' };
     const message = await this.chat.sendMessage(data.conversationId, userId, data.content);
@@ -58,11 +71,16 @@ export class ChatGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('message:read')
-  async onRead(@ConnectedSocket() client: AuthSocket, @MessageBody() data: { conversationId: string }) {
+  async onRead(
+    @ConnectedSocket() client: AuthSocket,
+    @MessageBody() data: { conversationId: string },
+  ) {
     const userId = client.user?.sub;
     if (!userId) return { error: 'unauthorized' };
     await this.chat.markRead(data.conversationId, userId);
-    this.server.to(`conversation:${data.conversationId}`).emit('message:read', { conversationId: data.conversationId, by: userId });
+    this.server
+      .to(`conversation:${data.conversationId}`)
+      .emit('message:read', { conversationId: data.conversationId, by: userId });
     return { ok: true };
   }
 }

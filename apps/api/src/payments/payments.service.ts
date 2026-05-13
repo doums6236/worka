@@ -21,7 +21,10 @@ export class PaymentsService {
     }[type];
   }
 
-  async initPayment(userId: string, dto: InitPaymentDto): Promise<{ transactionId: string; paymentUrl: string }> {
+  async initPayment(
+    userId: string,
+    dto: InitPaymentDto,
+  ): Promise<{ transactionId: string; paymentUrl: string }> {
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
     const pricing = await this.pricing.get(this.priceKeyFor(dto.type));
     if (!pricing) {

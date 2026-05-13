@@ -15,6 +15,9 @@ export class FeedController {
   @Get()
   get(@CurrentUser() u: AccessPayload, @Query('limit') limit?: string) {
     const parsed = limit ? Number(limit) : 10;
-    return this.feed.getFeedForCandidate(u.sub, Math.min(50, Number.isFinite(parsed) ? parsed : 10));
+    return this.feed.getFeedForCandidate(
+      u.sub,
+      Math.min(50, Number.isFinite(parsed) ? parsed : 10),
+    );
   }
 }

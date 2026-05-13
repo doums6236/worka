@@ -22,6 +22,6 @@ export function computeMatchScore(i: MatchInputs): number {
     skillMatch = 0.5;
   }
 
-  const score = (domainMatch * 40) + (countryMatch * 30) + (skillMatch * 30);
+  const score = domainMatch * 40 + countryMatch * 30 + skillMatch * 30;
   return Math.max(0, Math.min(100, Math.round(score)));
 }

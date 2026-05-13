@@ -29,10 +29,14 @@ export class StorageService {
     return this.client;
   }
 
-  async getSignedUploadUrl(params: SignedUploadParams): Promise<{ uploadUrl: string; publicUrl: string }> {
+  async getSignedUploadUrl(
+    params: SignedUploadParams,
+  ): Promise<{ uploadUrl: string; publicUrl: string }> {
     const allowed = params.bucket === 'cv' ? ALLOWED_CV_MIMES : ALLOWED_IMAGE_MIMES;
     if (!allowed.includes(params.contentType)) {
-      throw new BadRequestException(`Content type ${params.contentType} not allowed for bucket ${params.bucket}`);
+      throw new BadRequestException(
+        `Content type ${params.contentType} not allowed for bucket ${params.bucket}`,
+      );
     }
     if (params.maxBytes <= 0 || params.maxBytes > 10_000_000) {
       throw new BadRequestException('maxBytes must be in [1, 10_000_000]');

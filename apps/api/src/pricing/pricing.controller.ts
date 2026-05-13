@@ -1,5 +1,12 @@
 import {
-  Body, Controller, Get, Param, Put, UseGuards, BadRequestException, UseInterceptors,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Put,
+  UseGuards,
+  BadRequestException,
+  UseInterceptors,
 } from '@nestjs/common';
 import { z } from 'zod';
 import { AuditInterceptor } from '../audit/audit.interceptor';
@@ -36,11 +43,7 @@ export class PricingController {
   @UseInterceptors(AuditInterceptor)
   @Roles('admin')
   @Audit('pricing.upsert', 'pricing_config')
-  upsert(
-    @Param('key') key: string,
-    @CurrentUser() u: AccessPayload,
-    @Body() body: unknown,
-  ) {
+  upsert(@Param('key') key: string, @CurrentUser() u: AccessPayload, @Body() body: unknown) {
     const parsed = upsertSchema.safeParse(body);
     if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
     return this.svc.upsert(key, parsed.data.value, parsed.data.currency, u.sub);

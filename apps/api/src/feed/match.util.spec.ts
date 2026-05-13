@@ -33,7 +33,9 @@ describe('computeMatchScore', () => {
 
   it('clamps between 0 and 100', () => {
     const score = computeMatchScore({
-      candidateDomainIds: [], candidateCountry: 'GN', candidateSkillIds: [],
+      candidateDomainIds: [],
+      candidateCountry: 'GN',
+      candidateSkillIds: [],
       job: { domainId: 'd1', country: 'XX', skillIds: ['s1', 's2'] },
     });
     expect(score).toBeGreaterThanOrEqual(0);

@@ -6,15 +6,31 @@ import { RedisService } from '../common/redis.service';
 export class OtpService {
   constructor(private readonly redis: RedisService) {}
 
-  private get length() { return Number(process.env.OTP_LENGTH ?? 6); }
-  private get ttl() { return Number(process.env.OTP_TTL_SECONDS ?? 300); }
-  private get maxAttempts() { return Number(process.env.OTP_MAX_ATTEMPTS ?? 3); }
-  private get throttleWindow() { return Number(process.env.OTP_THROTTLE_WINDOW_SECONDS ?? 900); }
-  private get throttleMax() { return Number(process.env.OTP_THROTTLE_MAX_PER_WINDOW ?? 3); }
+  private get length() {
+    return Number(process.env.OTP_LENGTH ?? 6);
+  }
+  private get ttl() {
+    return Number(process.env.OTP_TTL_SECONDS ?? 300);
+  }
+  private get maxAttempts() {
+    return Number(process.env.OTP_MAX_ATTEMPTS ?? 3);
+  }
+  private get throttleWindow() {
+    return Number(process.env.OTP_THROTTLE_WINDOW_SECONDS ?? 900);
+  }
+  private get throttleMax() {
+    return Number(process.env.OTP_THROTTLE_MAX_PER_WINDOW ?? 3);
+  }
 
-  private keyCode(phone: string) { return `otp:${phone}`; }
-  private keyAttempts(phone: string) { return `otp:attempts:${phone}`; }
-  private keyThrottle(phone: string) { return `otp:throttle:${phone}`; }
+  private keyCode(phone: string) {
+    return `otp:${phone}`;
+  }
+  private keyAttempts(phone: string) {
+    return `otp:attempts:${phone}`;
+  }
+  private keyThrottle(phone: string) {
+    return `otp:throttle:${phone}`;
+  }
 
   async generate(phone: string): Promise<string> {
     const count = await this.redis.incr(this.keyThrottle(phone));

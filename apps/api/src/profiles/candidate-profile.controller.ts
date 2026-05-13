@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Patch, Post, Put, UseGuards, BadRequestException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Put,
+  UseGuards,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -6,7 +15,9 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { AccessPayload } from '../auth/jwt.service';
 import { CandidateProfileService } from './candidate-profile.service';
 import {
-  upsertCandidateProfileSchema, setDomainsSchema, setCvUrlSchema,
+  upsertCandidateProfileSchema,
+  setDomainsSchema,
+  setCvUrlSchema,
 } from './dto/candidate-profile.dto';
 
 @Controller('me/candidate-profile')
