@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../common/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
-import type { MessageType, ConversationStatus } from '@prisma/client';
+import type { MessageType } from '@prisma/client';
 
 export interface AppointmentMetadata {
   datetime: string; // ISO 8601
@@ -30,7 +30,9 @@ export class ChatService {
     const job = await this.prisma.job.findUnique({ where: { id: jobId } });
     if (!job) throw new NotFoundException('Job not found');
     if (job.postedByUserId !== recruiterUserId) {
-      throw new ForbiddenException('Only the recruiter who posted the job can initiate the conversation');
+      throw new ForbiddenException(
+        'Only the recruiter who posted the job can initiate the conversation',
+      );
     }
     const application = await this.prisma.application.findUnique({
       where: { jobId_candidateUserId: { jobId, candidateUserId } },
@@ -102,7 +104,8 @@ export class ChatService {
     });
 
     // Notify the OTHER party
-    const recipientId = senderId === conv.candidateUserId ? conv.recruiterUserId : conv.candidateUserId;
+    const recipientId =
+      senderId === conv.candidateUserId ? conv.recruiterUserId : conv.candidateUserId;
     if (type === 'text') {
       await this.notifications.create({
         userId: recipientId,
@@ -230,7 +233,9 @@ export class ChatService {
     }
 
     const responseType = response === 'confirm' ? 'appointment_confirmed' : 'appointment_declined';
-    const originalMeta = (proposal.metadata ?? {}) as unknown as AppointmentMetadata & { status?: string };
+    const originalMeta = (proposal.metadata ?? {}) as unknown as AppointmentMetadata & {
+      status?: string;
+    };
     const updatedMeta = {
       ...originalMeta,
       status: response === 'confirm' ? 'confirmed' : 'declined',

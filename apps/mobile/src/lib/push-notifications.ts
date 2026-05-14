@@ -1,30 +1,56 @@
 import { Platform } from 'react-native';
-import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { notificationsApi } from '../api/endpoints';
 
 let tokenRegistered = false;
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
-
 /**
- * Remote push tokens (Expo Push) are NOT available in Expo Go since SDK 53.
- * They only work in a dev-client / standalone (EAS) build.
- * Local scheduled notifications work everywhere.
+ * SDK 53+ : `expo-notifications` plante au chargement en Expo Go (l'erreur
+ * "expo-notifications: Android Push notifications functionality was removed
+ * from Expo Go" est levée par addPushTokenListener au moment du `require`).
+ *
+ * On évite donc TOUT import top-level du module, et on le charge dynamiquement
+ * uniquement quand on est en dev-client / EAS Build.
  */
 const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
+async function loadNotifs() {
+  if (isExpoGo) return null;
+  try {
+    const mod = await import('expo-notifications');
+    return mod;
+  } catch {
+    return null;
+  }
+}
+
 export async function registerPushTokenAsync(): Promise<string | null> {
   if (tokenRegistered) return null;
-  if (!Device.isDevice) return null;
+  if (isExpoGo) {
+    // Pas de push distantes possibles, mais on ne crash pas. Les rappels locaux
+    // sont aussi désactivés ici (ils nécessitent le module natif).
+    tokenRegistered = true;
+    return null;
+  }
+
+  const Notifications = await loadNotifs();
+  if (!Notifications) return null;
+
+  // Configure how notifications behave when app is in foreground
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
+
+  try {
+    const Device = await import('expo-device');
+    if (!Device.isDevice) return null;
+  } catch {
+    return null;
+  }
 
   const { status: existing } = await Notifications.getPermissionsAsync();
   let finalStatus = existing;
@@ -43,19 +69,13 @@ export async function registerPushTokenAsync(): Promise<string | null> {
     });
   }
 
-  if (isExpoGo) {
-    // Expo Go cannot get remote push tokens since SDK 53. Local reminders still work.
-    tokenRegistered = true;
-    return null;
-  }
-
   try {
-    const projectId =
-      Constants.expoConfig?.extra?.eas?.projectId ?? undefined;
+    const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? undefined;
     const tokenResponse = await Notifications.getExpoPushTokenAsync(
       projectId ? { projectId } : undefined,
     );
     const token = tokenResponse.data;
+    const { notificationsApi } = await import('../api/endpoints');
     const platform: 'ios' | 'android' | 'web' =
       Platform.OS === 'ios' ? 'ios' : Platform.OS === 'android' ? 'android' : 'web';
     await notificationsApi.registerPushToken(token, platform);
@@ -67,14 +87,19 @@ export async function registerPushTokenAsync(): Promise<string | null> {
 }
 
 /**
- * Schedule two local reminders for an appointment: 24h and 1h before.
- * Returns the scheduled notification identifiers (for cancellation).
+ * Programme des rappels locaux 24h et 1h avant un rendez-vous.
+ * En Expo Go : no-op (le module natif n'est pas dispo).
  */
 export async function scheduleAppointmentReminders(
   datetime: string,
   title: string,
   body: string,
 ): Promise<string[]> {
+  if (isExpoGo) return [];
+
+  const Notifications = await loadNotifs();
+  if (!Notifications) return [];
+
   const target = new Date(datetime).getTime();
   const now = Date.now();
   const ids: string[] = [];
@@ -105,6 +130,9 @@ export async function scheduleAppointmentReminders(
 }
 
 export async function cancelScheduled(ids: string[]) {
+  if (isExpoGo) return;
+  const Notifications = await loadNotifs();
+  if (!Notifications) return;
   for (const id of ids) {
     try {
       await Notifications.cancelScheduledNotificationAsync(id);

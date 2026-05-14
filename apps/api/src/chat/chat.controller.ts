@@ -43,7 +43,11 @@ export class ChatController {
     if (u.role !== 'recruiter') {
       throw new BadRequestException('Only recruiters can initiate a conversation');
     }
-    return this.svc.createConversationAsRecruiter(u.sub, parsed.data.candidateUserId, parsed.data.jobId);
+    return this.svc.createConversationAsRecruiter(
+      u.sub,
+      parsed.data.candidateUserId,
+      parsed.data.jobId,
+    );
   }
 
   @Get('conversations/:id/messages')
@@ -74,14 +78,22 @@ export class ChatController {
   }
 
   @Post('conversations/:id/appointment')
-  proposeAppointment(@CurrentUser() u: AccessPayload, @Param('id') id: string, @Body() body: unknown) {
+  proposeAppointment(
+    @CurrentUser() u: AccessPayload,
+    @Param('id') id: string,
+    @Body() body: unknown,
+  ) {
     const parsed = appointmentSchema.safeParse(body);
     if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
     return this.svc.proposeAppointment(id, u.sub, parsed.data);
   }
 
   @Post('messages/:id/appointment-response')
-  respondAppointment(@CurrentUser() u: AccessPayload, @Param('id') id: string, @Body() body: unknown) {
+  respondAppointment(
+    @CurrentUser() u: AccessPayload,
+    @Param('id') id: string,
+    @Body() body: unknown,
+  ) {
     const parsed = appointmentResponseSchema.safeParse(body);
     if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
     return this.svc.respondAppointment(id, u.sub, parsed.data.response, parsed.data.declineReason);
