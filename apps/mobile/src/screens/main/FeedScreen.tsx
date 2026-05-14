@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
   },
-  logo: { width: 110, height: 32 },
+  logo: { width: 220, height: 64 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, backgroundColor: theme.colors.bg },
   cardsArea: { flex: 1, padding: 20, position: 'relative' },
   cardWrap: { flex: 1, position: 'absolute', inset: 20 },

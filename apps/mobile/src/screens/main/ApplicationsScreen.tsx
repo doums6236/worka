@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -6,11 +6,25 @@ import {
   FlatList,
   ActivityIndicator,
   RefreshControl,
+  ScrollView,
+  TouchableOpacity,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { applicationsApi } from '../../api/endpoints';
 import { theme } from '../../theme';
 import type { Application, ApplicationStatus } from '../../api/types';
+
+type Filter = 'all' | ApplicationStatus;
+
+const FILTERS: { key: Filter; label: string }[] = [
+  { key: 'all', label: 'Toutes' },
+  { key: 'pending', label: 'En attente' },
+  { key: 'viewed', label: 'Vues' },
+  { key: 'shortlisted', label: 'Shortlist' },
+  { key: 'hired', label: 'Embauché' },
+  { key: 'rejected', label: 'Refusées' },
+];
 
 const STATUS_STEPS: { key: ApplicationStatus; label: string }[] = [
   { key: 'pending', label: 'Envoyée' },
@@ -41,37 +55,97 @@ function indexFor(status: ApplicationStatus): number {
 }
 
 export function ApplicationsScreen() {
+  const insets = useSafeAreaInsets();
+  const [filter, setFilter] = useState<Filter>('all');
+
   const { data, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ['applications'],
     queryFn: () => applicationsApi.listMine(),
   });
 
+  const counts = useMemo(() => {
+    const c: Record<Filter, number> = {
+      all: 0,
+      pending: 0,
+      viewed: 0,
+      shortlisted: 0,
+      rejected: 0,
+      hired: 0,
+    };
+    (data ?? []).forEach((a) => {
+      c.all += 1;
+      c[a.status] = (c[a.status] ?? 0) + 1;
+    });
+    return c;
+  }, [data]);
+
+  const visible = useMemo(
+    () => (filter === 'all' ? data ?? [] : (data ?? []).filter((a) => a.status === filter)),
+    [data, filter],
+  );
+
+  const header = (
+    <>
+      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+        <Text style={styles.headerTitle}>Mes candidatures</Text>
+        {data && data.length > 0 && <Text style={styles.headerCount}>{data.length}</Text>}
+      </View>
+      {data && data.length > 0 && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterRow}
+          style={styles.filterScroll}
+        >
+          {FILTERS.filter((f) => f.key === 'all' || counts[f.key] > 0).map((f) => {
+            const active = filter === f.key;
+            return (
+              <TouchableOpacity
+                key={f.key}
+                onPress={() => setFilter(f.key)}
+                style={[styles.filterChip, active && styles.filterChipActive]}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.filterText, active && styles.filterTextActive]}>
+                  {f.label} · {counts[f.key]}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      )}
+    </>
+  );
+
   if (isLoading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator color={theme.colors.primary} size="large" />
+      <View style={styles.root}>
+        {header}
+        <View style={styles.center}>
+          <ActivityIndicator color={theme.colors.primary} size="large" />
+        </View>
       </View>
     );
   }
 
   if (!data || data.length === 0) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.emptyEmoji}>📨</Text>
-        <Text style={styles.emptyTitle}>Pas encore de candidature</Text>
-        <Text style={styles.emptySub}>Swipe à droite sur une offre pour postuler</Text>
+      <View style={styles.root}>
+        {header}
+        <View style={styles.center}>
+          <Text style={styles.emptyEmoji}>📨</Text>
+          <Text style={styles.emptyTitle}>Pas encore de candidature</Text>
+          <Text style={styles.emptySub}>Swipe à droite sur une offre pour postuler</Text>
+        </View>
       </View>
     );
   }
 
   return (
     <View style={styles.root}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Mes candidatures</Text>
-        <Text style={styles.headerCount}>{data.length}</Text>
-      </View>
+      {header}
       <FlatList
-        data={data}
+        data={visible}
         keyExtractor={(a) => a.id}
         contentContainerStyle={{ padding: 16 }}
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
@@ -79,6 +153,11 @@ export function ApplicationsScreen() {
           <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={theme.colors.primary} />
         }
         renderItem={({ item }) => <ApplicationCard item={item} />}
+        ListEmptyComponent={
+          <View style={styles.emptyFilter}>
+            <Text style={styles.emptyFilterText}>Aucune candidature dans cette catégorie</Text>
+          </View>
+        }
       />
     </View>
   );
@@ -158,12 +237,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 20,
-    paddingTop: 60,
+    paddingHorizontal: 20,
+    paddingBottom: 14,
+    backgroundColor: '#fff',
+  },
+  filterScroll: {
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
   },
+  filterRow: { paddingHorizontal: 16, paddingBottom: 12, gap: 8 },
+  filterChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 999,
+    backgroundColor: theme.colors.surfaceMuted,
+  },
+  filterChipActive: { backgroundColor: theme.colors.primary },
+  filterText: { fontFamily: theme.fonts.bold, fontSize: 12, color: theme.colors.textSecondary },
+  filterTextActive: { color: '#fff' },
   headerTitle: { fontFamily: theme.fonts.extrabold, fontSize: 22, color: '#111' },
   headerCount: {
     fontFamily: theme.fonts.bold,
@@ -217,4 +309,6 @@ const styles = StyleSheet.create({
   emptyEmoji: { fontSize: 64, marginBottom: 16 },
   emptyTitle: { fontFamily: theme.fonts.extrabold, fontSize: 18, color: '#111', marginBottom: 6 },
   emptySub: { fontFamily: theme.fonts.medium, fontSize: 13, color: theme.colors.textSecondary, textAlign: 'center' },
+  emptyFilter: { paddingTop: 40, alignItems: 'center' },
+  emptyFilterText: { fontFamily: theme.fonts.medium, fontSize: 13, color: theme.colors.textSecondary },
 });

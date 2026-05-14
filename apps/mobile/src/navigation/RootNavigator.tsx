@@ -6,6 +6,7 @@ import { AuthStack } from './AuthStack';
 import { AppStack } from './AppStack';
 import { OnboardingStack } from './OnboardingStack';
 import { registerPushTokenAsync } from '../lib/push-notifications';
+import { loadLocale } from '../lib/i18n';
 import { theme } from '../theme';
 
 export function RootNavigator() {
@@ -15,6 +16,7 @@ export function RootNavigator() {
   const hydrate = useAuthStore((s) => s.hydrate);
 
   useEffect(() => {
+    void loadLocale();
     void hydrate();
   }, [hydrate]);
 

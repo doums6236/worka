@@ -34,7 +34,8 @@
         {
           "color": "#1A91FF"
         }
-      ]
+      ],
+      "expo-localization"
     ]
   }
 }

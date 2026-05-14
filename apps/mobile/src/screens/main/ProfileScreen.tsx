@@ -24,6 +24,7 @@ import {
 } from 'lucide-react-native';
 import { candidateProfileApi } from '../../api/endpoints';
 import { useAuthStore } from '../../stores/auth';
+import { getLocale, getCountryCode, detectLocale } from '../../lib/i18n';
 import { theme } from '../../theme';
 
 export function ProfileScreen() {
@@ -166,7 +167,7 @@ export function ProfileScreen() {
           <Row
             icon={<Globe size={18} color={theme.colors.primary} />}
             label="Langue"
-            value="Français"
+            value={languageLabel()}
             chevron
           />
           <Row
@@ -192,6 +193,23 @@ export function ProfileScreen() {
       </ScrollView>
     </View>
   );
+}
+
+function languageLabel(): string {
+  const stored = getLocale();
+  const detected = detectLocale();
+  const region = getCountryCode();
+  const names: Record<string, string> = { fr: 'Français', en: 'English', ar: 'العربية' };
+  const main = names[stored] ?? 'Français';
+  const detail =
+    region && stored === detected
+      ? ` · auto (${region})`
+      : stored !== 'fr'
+      ? ''
+      : detected !== 'fr'
+      ? ` · phone : ${names[detected] ?? detected}`
+      : '';
+  return main + detail;
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
