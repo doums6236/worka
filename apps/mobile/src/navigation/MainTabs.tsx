@@ -1,21 +1,15 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Home, Search, FileText, MessageCircle, User } from 'lucide-react-native';
+import { Home, Star, FileText, MessageCircle, User } from 'lucide-react-native';
 import { FeedScreen } from '../screens/main/FeedScreen';
 import { ApplicationsScreen } from '../screens/main/ApplicationsScreen';
 import { MessagesScreen } from '../screens/main/MessagesScreen';
-import { PlaceholderScreen } from '../screens/main/PlaceholderScreen';
+import { SavedJobsScreen } from '../screens/main/SavedJobsScreen';
+import { ProfileScreen } from '../screens/main/ProfileScreen';
 import { theme } from '../theme';
 
 const Tab = createBottomTabNavigator();
-
-const ExploreScreen = () => (
-  <PlaceholderScreen emoji="🔎" title="Explorer" subtitle="Recherche avancée à venir" />
-);
-const ProfileScreen = () => (
-  <PlaceholderScreen emoji="👤" title="Profil" subtitle="Édition + Premium (Plan 4E)" />
-);
 
 export function MainTabs() {
   const insets = useSafeAreaInsets();
@@ -42,9 +36,9 @@ export function MainTabs() {
         options={{ tabBarIcon: ({ color, size }) => <Home size={size} color={color} /> }}
       />
       <Tab.Screen
-        name="Explorer"
-        component={ExploreScreen}
-        options={{ tabBarIcon: ({ color, size }) => <Search size={size} color={color} /> }}
+        name="Sauvegardés"
+        component={SavedJobsScreen}
+        options={{ tabBarIcon: ({ color, size }) => <Star size={size} color={color} /> }}
       />
       <Tab.Screen
         name="Candidatures"

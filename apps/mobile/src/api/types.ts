@@ -123,6 +123,7 @@ export interface SwipeRecord {
   direction: SwipeDir;
   swipedAt: string;
   matchScoreAtSwipe?: number | null;
+  job?: Job;
 }
 
 export type ApplicationStatus = 'pending' | 'viewed' | 'shortlisted' | 'rejected' | 'hired';
