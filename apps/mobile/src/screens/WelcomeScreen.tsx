@@ -2,8 +2,9 @@ import React, { useRef, useState } from 'react';
 import { View, Text, FlatList, Dimensions, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { theme } from '../../theme';
-import type { OnboardingStackParamList } from '../../navigation/OnboardingStack';
+import { theme } from '../theme';
+import { preferences } from '../lib/preferences';
+import type { AuthStackParamList } from '../navigation/AuthStack';
 
 const { width } = Dimensions.get('window');
 
@@ -37,23 +38,28 @@ const SLIDES: Slide[] = [
   },
 ];
 
-type Nav = NativeStackNavigationProp<OnboardingStackParamList, 'Welcome'>;
+type Nav = NativeStackNavigationProp<AuthStackParamList, 'Welcome'>;
 
 export function WelcomeScreen() {
   const navigation = useNavigation<Nav>();
   const [index, setIndex] = useState(0);
   const listRef = useRef<FlatList<Slide>>(null);
 
+  async function goToLogin() {
+    await preferences.markWelcomeSeen();
+    navigation.replace('Login');
+  }
+
   function onNext() {
     if (index < SLIDES.length - 1) {
       listRef.current?.scrollToIndex({ index: index + 1, animated: true });
     } else {
-      navigation.replace('DomainSelection');
+      void goToLogin();
     }
   }
 
   function onSkip() {
-    navigation.replace('DomainSelection');
+    void goToLogin();
   }
 
   return (

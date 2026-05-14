@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { theme } from '../theme';
+import { preferences } from '../lib/preferences';
 import type { AuthStackParamList } from '../navigation/AuthStack';
 
 type Nav = NativeStackNavigationProp<AuthStackParamList, 'Splash'>;
@@ -11,7 +12,10 @@ export function SplashScreen() {
   const navigation = useNavigation<Nav>();
 
   useEffect(() => {
-    const id = setTimeout(() => navigation.replace('Login'), 1500);
+    const id = setTimeout(async () => {
+      const seen = await preferences.hasSeenWelcome();
+      navigation.replace(seen ? 'Login' : 'Welcome');
+    }, 1500);
     return () => clearTimeout(id);
   }, [navigation]);
 

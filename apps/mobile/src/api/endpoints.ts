@@ -7,6 +7,10 @@ import type {
   UserDomain,
   CandidateProfile,
   SignedUploadUrl,
+  FeedItem,
+  SwipeDir,
+  SwipeRecord,
+  Application,
 } from './types';
 
 export const authApi = {
@@ -55,4 +59,26 @@ export const candidateProfileApi = {
       method: 'PATCH',
       body: { cvUrl },
     }),
+};
+
+export const feedApi = {
+  get: (limit = 10) => api.request<FeedItem[]>(`/jobs/feed?limit=${limit}`),
+};
+
+export const swipesApi = {
+  record: (jobId: string, direction: SwipeDir, matchScore?: number) =>
+    api.request<SwipeRecord>('/swipes', {
+      method: 'POST',
+      body: { jobId, direction, matchScore },
+    }),
+  listSaved: () => api.request<SwipeRecord[]>('/swipes/saved'),
+};
+
+export const applicationsApi = {
+  create: (jobId: string, coverLetterUrl?: string) =>
+    api.request<Application>('/applications', {
+      method: 'POST',
+      body: { jobId, coverLetterUrl },
+    }),
+  listMine: () => api.request<Application[]>('/applications/mine'),
 };
