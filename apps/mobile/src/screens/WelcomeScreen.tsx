@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, FlatList, Dimensions, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { theme } from '../theme';
 import { preferences } from '../lib/preferences';
@@ -42,6 +43,7 @@ type Nav = NativeStackNavigationProp<AuthStackParamList, 'Welcome'>;
 
 export function WelcomeScreen() {
   const navigation = useNavigation<Nav>();
+  const insets = useSafeAreaInsets();
   const [index, setIndex] = useState(0);
   const listRef = useRef<FlatList<Slide>>(null);
 
@@ -76,7 +78,7 @@ export function WelcomeScreen() {
           setIndex(i);
         }}
         renderItem={({ item }) => (
-          <View style={[styles.slide, { width }]}>
+          <View style={[styles.slide, { width, paddingTop: insets.top + 40 }]}>
             <View style={[styles.illustration, { backgroundColor: item.bg }]}>
               <Text style={styles.emoji}>{item.emoji}</Text>
             </View>
@@ -95,7 +97,7 @@ export function WelcomeScreen() {
         ))}
       </View>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) + 16 }]}>
         <TouchableOpacity onPress={onSkip} style={styles.skipBtn}>
           <Text style={styles.skipText}>Passer</Text>
         </TouchableOpacity>
@@ -111,7 +113,6 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.bg },
   slide: {
     paddingHorizontal: 24,
-    paddingTop: 80,
     alignItems: 'center',
   },
   illustration: {
@@ -165,7 +166,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 24,
-    paddingBottom: 32,
     paddingTop: 8,
   },
   skipBtn: { paddingHorizontal: 12, paddingVertical: 8 },

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -14,6 +15,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Heart, X, Star, RotateCcw, Info } from 'lucide-react-native';
 import { feedApi, swipesApi, applicationsApi } from '../../api/endpoints';
 import { JobCard } from '../../components/JobCard';
+import { NotificationBell } from '../../components/NotificationBell';
 import { theme } from '../../theme';
 import type { FeedItem } from '../../api/types';
 
@@ -21,6 +23,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.28;
 
 export function FeedScreen() {
+  const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const { data: feed, isLoading, refetch } = useQuery({
     queryKey: ['feed'],
@@ -116,29 +119,47 @@ export function FeedScreen() {
     opacity: interpolate(Math.abs(tx.value), [0, SCREEN_WIDTH * 0.5], [0.6, 1], Extrapolation.CLAMP),
   }));
 
+  const header = (
+    <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+      <Image
+        source={require('../../../assets/worka-logo.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+      <NotificationBell />
+    </View>
+  );
+
   if (isLoading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator color={theme.colors.primary} size="large" />
+      <View style={styles.root}>
+        {header}
+        <View style={styles.center}>
+          <ActivityIndicator color={theme.colors.primary} size="large" />
+        </View>
       </View>
     );
   }
 
   if (!top) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.emptyTitle}>Plus d'offres pour le moment</Text>
-        <Text style={styles.emptySub}>Reviens plus tard, on cherche pour toi 🔍</Text>
-        <TouchableOpacity style={styles.refreshBtn} onPress={() => void refetch()}>
-          <RotateCcw size={16} color="#fff" />
-          <Text style={styles.refreshText}>Actualiser</Text>
-        </TouchableOpacity>
+      <View style={styles.root}>
+        {header}
+        <View style={styles.center}>
+          <Text style={styles.emptyTitle}>Plus d'offres pour le moment</Text>
+          <Text style={styles.emptySub}>Reviens plus tard, on cherche pour toi</Text>
+          <TouchableOpacity style={styles.refreshBtn} onPress={() => void refetch()}>
+            <RotateCcw size={16} color="#fff" />
+            <Text style={styles.refreshText}>Actualiser</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
 
   return (
     <View style={styles.root}>
+      {header}
       <View style={styles.cardsArea}>
         {next && (
           <Animated.View style={[styles.cardWrap, styles.cardBehind, nextStyle]}>
@@ -206,6 +227,17 @@ function ActionBtn({
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.bg },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  },
+  logo: { width: 110, height: 32 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, backgroundColor: theme.colors.bg },
   cardsArea: { flex: 1, padding: 20, position: 'relative' },
   cardWrap: { flex: 1, position: 'absolute', inset: 20 },

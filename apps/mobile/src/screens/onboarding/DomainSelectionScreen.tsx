@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { domainsApi, candidateProfileApi } from '../../api/endpoints';
@@ -22,6 +23,7 @@ const MAX_SELECTION = 3;
 
 export function DomainSelectionScreen() {
   const navigation = useNavigation<Nav>();
+  const insets = useSafeAreaInsets();
   const refreshOnboardingStatus = useAuthStore((s) => s.refreshOnboardingStatus);
 
   const [selected, setSelected] = useState<string[]>([]);
@@ -59,7 +61,7 @@ export function DomainSelectionScreen() {
 
   return (
     <View style={styles.root}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
         <Text style={styles.step}>ÉTAPE 2 / 3</Text>
         <Text style={styles.title}>
           Choisis <Text style={styles.titleEm}>3 domaines</Text>
@@ -102,7 +104,7 @@ export function DomainSelectionScreen() {
 
       {error && <Text style={styles.error}>{error}</Text>}
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) + 16 }]}>
         <TouchableOpacity
           style={[
             styles.cta,
@@ -129,7 +131,7 @@ export function DomainSelectionScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.bg },
-  header: { padding: 24, paddingTop: 60, alignItems: 'center' },
+  header: { paddingHorizontal: 24, paddingBottom: 16, alignItems: 'center' },
   step: {
     fontFamily: theme.fonts.bold,
     fontSize: 10,
@@ -215,7 +217,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 24,
   },
-  footer: { paddingHorizontal: 24, paddingBottom: 32, paddingTop: 12 },
+  footer: { paddingHorizontal: 24, paddingTop: 12 },
   cta: { paddingVertical: 15, borderRadius: 16, alignItems: 'center' },
   ctaEnabled: {
     backgroundColor: theme.colors.primary,

@@ -10,6 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { useRoute, type RouteProp } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { authApi, meApi } from '../api/endpoints';
 import { ApiError } from '../api/client';
 import { useAuthStore } from '../stores/auth';
@@ -22,6 +23,7 @@ const OTP_LENGTH = 6;
 
 export function OtpScreen() {
   const route = useRoute<Route>();
+  const insets = useSafeAreaInsets();
   const setUser = useAuthStore((s) => s.setUser);
   const setTokens = useAuthStore((s) => s.setTokens);
   const refreshOnboardingStatus = useAuthStore((s) => s.refreshOnboardingStatus);
@@ -86,7 +88,7 @@ export function OtpScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.root}
+      style={[styles.root, { paddingTop: insets.top + 32 }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <Text style={styles.title}>Code reçu par SMS</Text>
@@ -127,7 +129,7 @@ export function OtpScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: theme.colors.bg, padding: 24, paddingTop: 80 },
+  root: { flex: 1, backgroundColor: theme.colors.surface, paddingHorizontal: 24 },
   title: { fontFamily: theme.fonts.extrabold, fontSize: 26, color: '#111', textAlign: 'center' },
   subtitle: {
     marginTop: 8,

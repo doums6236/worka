@@ -5,6 +5,7 @@ import { useAuthStore } from '../stores/auth';
 import { AuthStack } from './AuthStack';
 import { AppStack } from './AppStack';
 import { OnboardingStack } from './OnboardingStack';
+import { registerPushTokenAsync } from '../lib/push-notifications';
 import { theme } from '../theme';
 
 export function RootNavigator() {
@@ -16,6 +17,12 @@ export function RootNavigator() {
   useEffect(() => {
     void hydrate();
   }, [hydrate]);
+
+  useEffect(() => {
+    if (user) {
+      void registerPushTokenAsync();
+    }
+  }, [user]);
 
   if (!hydrated) {
     return (

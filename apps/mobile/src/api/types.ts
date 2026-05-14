@@ -140,11 +140,32 @@ export interface Application {
   job?: Job;
 }
 
+export type MessageType =
+  | 'text'
+  | 'appointment_proposal'
+  | 'appointment_confirmed'
+  | 'appointment_declined'
+  | 'system';
+
+export type ConversationStatus = 'active' | 'closed';
+
+export interface AppointmentMetadata {
+  datetime: string;
+  location?: string;
+  durationMin?: number;
+  note?: string;
+  status?: 'pending' | 'confirmed' | 'declined';
+  declineReason?: string;
+  respondedAt?: string;
+}
+
 export interface Message {
   id: string;
   conversationId: string;
   senderId: string;
   content: string;
+  type?: MessageType;
+  metadata?: AppointmentMetadata | Record<string, unknown> | null;
   attachmentUrl?: string | null;
   sentAt: string;
   readAt?: string | null;
@@ -155,6 +176,9 @@ export interface Conversation {
   candidateUserId: string;
   recruiterUserId: string;
   jobId: string;
+  status?: ConversationStatus;
+  closedAt?: string | null;
+  closedByUserId?: string | null;
   lastMessageAt?: string | null;
   createdAt: string;
   job?: Job;
@@ -163,5 +187,34 @@ export interface Conversation {
     phone: string;
     candidateProfile?: { firstName?: string | null; lastName?: string | null } | null;
   };
+  recruiter?: {
+    id: string;
+    phone: string;
+  };
   messages?: Message[];
+}
+
+export type NotificationType =
+  | 'new_message'
+  | 'appointment_proposed'
+  | 'appointment_confirmed'
+  | 'appointment_declined'
+  | 'appointment_reminder'
+  | 'conversation_closed'
+  | 'conversation_reopened'
+  | 'new_job_match'
+  | 'application_viewed'
+  | 'application_shortlisted'
+  | 'application_rejected'
+  | 'application_hired';
+
+export interface AppNotification {
+  id: string;
+  userId: string;
+  type: NotificationType;
+  title: string;
+  body: string;
+  data?: Record<string, unknown> | null;
+  readAt?: string | null;
+  createdAt: string;
 }

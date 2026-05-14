@@ -230,7 +230,7 @@ export class ChatService {
     }
 
     const responseType = response === 'confirm' ? 'appointment_confirmed' : 'appointment_declined';
-    const originalMeta = (proposal.metadata ?? {}) as AppointmentMetadata & { status?: string };
+    const originalMeta = (proposal.metadata ?? {}) as unknown as AppointmentMetadata & { status?: string };
     const updatedMeta = {
       ...originalMeta,
       status: response === 'confirm' ? 'confirmed' : 'declined',

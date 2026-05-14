@@ -8,12 +8,14 @@ import {
   Alert,
 } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { candidateProfileApi } from '../../api/endpoints';
 import { ApiError } from '../../api/client';
 import { useAuthStore } from '../../stores/auth';
 import { theme } from '../../theme';
 
 export function CvUploadScreen() {
+  const insets = useSafeAreaInsets();
   const refreshOnboardingStatus = useAuthStore((s) => s.refreshOnboardingStatus);
 
   const [uploading, setUploading] = useState(false);
@@ -85,7 +87,7 @@ export function CvUploadScreen() {
   }
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { paddingTop: insets.top + 16, paddingBottom: Math.max(insets.bottom, 16) }]}>
       <View style={styles.header}>
         <Text style={styles.step}>ÉTAPE 3 / 3</Text>
         <Text style={styles.title}>
@@ -146,7 +148,7 @@ export function CvUploadScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: theme.colors.bg, padding: 24, paddingTop: 60 },
+  root: { flex: 1, backgroundColor: theme.colors.bg, paddingHorizontal: 24 },
   header: { alignItems: 'center', marginBottom: 32 },
   step: {
     fontFamily: theme.fonts.bold,

@@ -13,6 +13,8 @@ import type {
   Application,
   Conversation,
   Message,
+  AppointmentMetadata,
+  AppNotification,
 } from './types';
 
 export const authApi = {
@@ -87,10 +89,10 @@ export const applicationsApi = {
 
 export const chatApi = {
   listConversations: () => api.request<Conversation[]>('/chat/conversations'),
-  createConversation: (candidateUserId: string, recruiterUserId: string, jobId: string) =>
+  createConversation: (candidateUserId: string, jobId: string) =>
     api.request<Conversation>('/chat/conversations', {
       method: 'POST',
-      body: { candidateUserId, recruiterUserId, jobId },
+      body: { candidateUserId, jobId },
     }),
   listMessages: (conversationId: string) =>
     api.request<Message[]>(`/chat/conversations/${conversationId}/messages`),
@@ -102,5 +104,41 @@ export const chatApi = {
   markRead: (conversationId: string) =>
     api.request<{ count: number }>(`/chat/conversations/${conversationId}/read`, {
       method: 'POST',
+    }),
+  closeConversation: (conversationId: string) =>
+    api.request<Conversation>(`/chat/conversations/${conversationId}/close`, {
+      method: 'POST',
+    }),
+  reopenConversation: (conversationId: string) =>
+    api.request<Conversation>(`/chat/conversations/${conversationId}/reopen`, {
+      method: 'POST',
+    }),
+  proposeAppointment: (conversationId: string, data: AppointmentMetadata) =>
+    api.request<Message>(`/chat/conversations/${conversationId}/appointment`, {
+      method: 'POST',
+      body: data,
+    }),
+  respondAppointment: (
+    messageId: string,
+    response: 'confirm' | 'decline',
+    declineReason?: string,
+  ) =>
+    api.request<Message>(`/chat/messages/${messageId}/appointment-response`, {
+      method: 'POST',
+      body: { response, declineReason },
+    }),
+};
+
+export const notificationsApi = {
+  list: (limit = 50) => api.request<AppNotification[]>(`/notifications?limit=${limit}`),
+  unreadCount: () => api.request<{ count: number }>('/notifications/unread-count'),
+  markRead: (id: string) =>
+    api.request<{ ok: true }>(`/notifications/${id}/read`, { method: 'PATCH' }),
+  markAllRead: () =>
+    api.request<{ count: number }>('/notifications/read-all', { method: 'PATCH' }),
+  registerPushToken: (token: string, platform: 'ios' | 'android' | 'web') =>
+    api.request<{ ok: true }>('/notifications/push-token', {
+      method: 'POST',
+      body: { token, platform },
     }),
 };

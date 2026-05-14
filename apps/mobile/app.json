@@ -28,7 +28,13 @@
     },
     "plugins": [
       "expo-secure-store",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-notifications",
+        {
+          "color": "#1A91FF"
+        }
+      ]
     ]
   }
 }
