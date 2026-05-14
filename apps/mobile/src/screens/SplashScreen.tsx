@@ -26,7 +26,7 @@ export function SplashScreen() {
         style={styles.logo}
         resizeMode="contain"
       />
-      <Text style={styles.tagline}>Trouve ton emploi en swipant</Text>
+      <Text style={styles.tagline}>Trouve ton emploi en un swipe</Text>
       <View style={styles.dots}>
         {[0, 1, 2].map((i) => (
           <View key={i} style={styles.dot} />
@@ -43,13 +43,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
   },
-  logo: { width: 260, height: 90, marginBottom: 12 },
+  logo: { width: 360, height: 180, marginBottom: 0 },
   tagline: {
     marginTop: 4,
-    fontFamily: theme.fonts.medium,
-    fontSize: 11,
+    width: 360,
+    textAlign: 'center',
+    fontFamily: theme.fonts.semibold,
+    fontSize: 15,
     color: theme.colors.textSecondary,
-    letterSpacing: 2.5,
+    letterSpacing: 3.5,
     textTransform: 'uppercase',
   },
   dots: { flexDirection: 'row', gap: 8, marginTop: 56 },
