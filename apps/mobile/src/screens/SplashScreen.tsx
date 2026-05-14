@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Image, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { theme } from '../theme';
@@ -21,12 +21,11 @@ export function SplashScreen() {
 
   return (
     <View style={styles.root}>
-      <View style={styles.iconBox}>
-        <Text style={styles.iconText}>W</Text>
-      </View>
-      <Text style={styles.wordmark}>
-        Work<Text style={{ color: theme.colors.primary }}>a</Text>
-      </Text>
+      <Image
+        source={require('../../assets/worka-logo.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
       <Text style={styles.tagline}>Trouve ton emploi en swipant</Text>
       <View style={styles.dots}>
         {[0, 1, 2].map((i) => (
@@ -44,22 +43,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: theme.colors.bgLight,
   },
-  iconBox: {
-    width: 96,
-    height: 96,
-    borderRadius: 30,
-    backgroundColor: theme.colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-    shadowColor: theme.colors.primary,
-    shadowOpacity: 0.35,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 8,
-  },
-  iconText: { color: '#fff', fontFamily: theme.fonts.extrabold, fontSize: 48 },
-  wordmark: { fontFamily: theme.fonts.extrabold, fontSize: 38, color: '#111' },
+  logo: { width: 240, height: 80, marginBottom: 16 },
   tagline: {
     marginTop: 8,
     fontFamily: theme.fonts.medium,
