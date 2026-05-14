@@ -11,6 +11,8 @@ import type {
   SwipeDir,
   SwipeRecord,
   Application,
+  Conversation,
+  Message,
 } from './types';
 
 export const authApi = {
@@ -81,4 +83,24 @@ export const applicationsApi = {
       body: { jobId, coverLetterUrl },
     }),
   listMine: () => api.request<Application[]>('/applications/mine'),
+};
+
+export const chatApi = {
+  listConversations: () => api.request<Conversation[]>('/chat/conversations'),
+  createConversation: (candidateUserId: string, recruiterUserId: string, jobId: string) =>
+    api.request<Conversation>('/chat/conversations', {
+      method: 'POST',
+      body: { candidateUserId, recruiterUserId, jobId },
+    }),
+  listMessages: (conversationId: string) =>
+    api.request<Message[]>(`/chat/conversations/${conversationId}/messages`),
+  sendMessage: (conversationId: string, content: string) =>
+    api.request<Message>(`/chat/conversations/${conversationId}/messages`, {
+      method: 'POST',
+      body: { content },
+    }),
+  markRead: (conversationId: string) =>
+    api.request<{ count: number }>(`/chat/conversations/${conversationId}/read`, {
+      method: 'POST',
+    }),
 };

@@ -139,3 +139,29 @@ export interface Application {
   appliedAt: string;
   job?: Job;
 }
+
+export interface Message {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  content: string;
+  attachmentUrl?: string | null;
+  sentAt: string;
+  readAt?: string | null;
+}
+
+export interface Conversation {
+  id: string;
+  candidateUserId: string;
+  recruiterUserId: string;
+  jobId: string;
+  lastMessageAt?: string | null;
+  createdAt: string;
+  job?: Job;
+  candidate?: {
+    id: string;
+    phone: string;
+    candidateProfile?: { firstName?: string | null; lastName?: string | null } | null;
+  };
+  messages?: Message[];
+}
