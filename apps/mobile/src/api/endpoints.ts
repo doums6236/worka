@@ -1,5 +1,13 @@
 import { api } from './client';
-import type { SendOtpResponse, AuthResponse, MeResponse } from './types';
+import type {
+  SendOtpResponse,
+  AuthResponse,
+  MeResponse,
+  Domain,
+  UserDomain,
+  CandidateProfile,
+  SignedUploadUrl,
+} from './types';
 
 export const authApi = {
   sendOtp: (phone: string) =>
@@ -24,4 +32,27 @@ export const authApi = {
 
 export const meApi = {
   get: () => api.request<MeResponse>('/me'),
+};
+
+export const domainsApi = {
+  list: () => api.request<Domain[]>('/domains'),
+};
+
+export const candidateProfileApi = {
+  get: () => api.request<CandidateProfile>('/me/candidate-profile'),
+  getDomains: () => api.request<UserDomain[]>('/me/candidate-profile/domains'),
+  setDomains: (domainIds: string[]) =>
+    api.request<UserDomain[]>('/me/candidate-profile/domains', {
+      method: 'PUT',
+      body: { domainIds },
+    }),
+  cvUploadUrl: () =>
+    api.request<SignedUploadUrl>('/me/candidate-profile/cv-upload-url', {
+      method: 'POST',
+    }),
+  setCvUrl: (cvUrl: string) =>
+    api.request<CandidateProfile>('/me/candidate-profile/cv', {
+      method: 'PATCH',
+      body: { cvUrl },
+    }),
 };

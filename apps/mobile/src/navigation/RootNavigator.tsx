@@ -4,11 +4,13 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useAuthStore } from '../stores/auth';
 import { AuthStack } from './AuthStack';
 import { AppStack } from './AppStack';
+import { OnboardingStack } from './OnboardingStack';
 import { theme } from '../theme';
 
 export function RootNavigator() {
   const user = useAuthStore((s) => s.user);
   const hydrated = useAuthStore((s) => s.hydrated);
+  const needsOnboarding = useAuthStore((s) => s.needsOnboarding);
   const hydrate = useAuthStore((s) => s.hydrate);
 
   useEffect(() => {
@@ -23,9 +25,18 @@ export function RootNavigator() {
     );
   }
 
-  return <NavigationContainer>{user ? <AppStack /> : <AuthStack />}</NavigationContainer>;
+  return (
+    <NavigationContainer>
+      {!user ? <AuthStack /> : needsOnboarding ? <OnboardingStack /> : <AppStack />}
+    </NavigationContainer>
+  );
 }
 
 const styles = StyleSheet.create({
-  loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.bg },
+  loader: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.bg,
+  },
 });

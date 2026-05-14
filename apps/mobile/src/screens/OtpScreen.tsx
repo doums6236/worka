@@ -24,6 +24,7 @@ export function OtpScreen() {
   const route = useRoute<Route>();
   const setUser = useAuthStore((s) => s.setUser);
   const setTokens = useAuthStore((s) => s.setTokens);
+  const refreshOnboardingStatus = useAuthStore((s) => s.refreshOnboardingStatus);
 
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [error, setError] = useState<string | null>(null);
@@ -67,6 +68,7 @@ export function OtpScreen() {
         status: me.status,
         countryCode: me.countryCode ?? undefined,
       });
+      await refreshOnboardingStatus();
     } catch (e) {
       const msg =
         e instanceof ApiError && e.status === 401
