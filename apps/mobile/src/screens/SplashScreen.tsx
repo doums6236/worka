@@ -26,12 +26,7 @@ export function SplashScreen() {
         style={styles.logo}
         resizeMode="contain"
       />
-      <Text style={styles.tagline}>Trouve ton emploi en un swipe</Text>
-      <View style={styles.dots}>
-        {[0, 1, 2].map((i) => (
-          <View key={i} style={styles.dot} />
-        ))}
-      </View>
+      <Text style={styles.tagline}>Trouve ton emploi en un Swipe</Text>
     </View>
   );
 }
@@ -43,17 +38,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
   },
-  logo: { width: 360, height: 180, marginBottom: 0 },
+  logo: { width: 270, height: 90 },
   tagline: {
-    marginTop: 4,
-    width: 360,
+    marginTop: 6,
+    fontFamily: theme.fonts.bold,
+    fontSize: 18,
+    color: '#050505',
     textAlign: 'center',
-    fontFamily: theme.fonts.semibold,
-    fontSize: 15,
-    color: theme.colors.textSecondary,
-    letterSpacing: 3.5,
-    textTransform: 'uppercase',
   },
-  dots: { flexDirection: 'row', gap: 8, marginTop: 56 },
-  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: theme.colors.primary, opacity: 0.4 },
 });
