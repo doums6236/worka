@@ -73,7 +73,7 @@ export function LoginScreen() {
     >
       <ImageBackground
         source={require('../../assets/login-hero.png')}
-        style={[styles.hero, { paddingTop: insets.top + 20 }]}
+        style={[styles.hero, { paddingTop: insets.top + 16 }]}
         imageStyle={styles.heroImage}
       >
         <View style={styles.heroOverlay} />
@@ -84,7 +84,6 @@ export function LoginScreen() {
             resizeMode="contain"
           />
           <Text style={styles.heroTitle}>Trouve l'emploi qui te ressemble</Text>
-          <Text style={styles.heroSub}>Swipe les offres en Guinée et sous-région</Text>
         </View>
       </ImageBackground>
 
@@ -127,9 +126,6 @@ export function LoginScreen() {
           )}
         </TouchableOpacity>
 
-        <Text style={styles.footer}>
-          {COUNTRIES.map((c) => c.flag).join(' ')}
-        </Text>
       </View>
 
       <CountryPickerModal
@@ -147,27 +143,21 @@ export function LoginScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.surface },
-  hero: { height: 380, justifyContent: 'flex-end' },
+  hero: { height: 400, justifyContent: 'flex-start' },
   heroImage: { resizeMode: 'cover' },
   heroOverlay: {
     position: 'absolute',
     inset: 0,
     backgroundColor: 'rgba(9, 102, 199, 0.75)',
   },
-  heroContent: { padding: 24, paddingBottom: 28 },
-  heroLogo: { width: 290, height: 95, marginBottom: 14, marginLeft: -6 },
+  heroContent: { paddingHorizontal: 24, paddingTop: 8, paddingBottom: 28 },
+  heroLogo: { width: 360, height: 140, marginLeft: -10, marginBottom: 18 },
   heroTitle: {
     color: '#fff',
     fontFamily: theme.fonts.extrabold,
-    fontSize: 28,
+    fontSize: 30,
     letterSpacing: -0.8,
-    lineHeight: 32,
-  },
-  heroSub: {
-    marginTop: 8,
-    color: 'rgba(255,255,255,0.9)',
-    fontFamily: theme.fonts.medium,
-    fontSize: 14,
+    lineHeight: 34,
   },
   body: { flex: 1, padding: 24, backgroundColor: theme.colors.surface },
   label: {
