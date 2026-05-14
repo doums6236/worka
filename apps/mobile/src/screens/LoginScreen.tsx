@@ -147,7 +147,7 @@ export function LoginScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.surface },
-  hero: { height: 320, justifyContent: 'flex-end' },
+  hero: { height: 380, justifyContent: 'flex-end' },
   heroImage: { resizeMode: 'cover' },
   heroOverlay: {
     position: 'absolute',
@@ -155,19 +155,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(9, 102, 199, 0.75)',
   },
   heroContent: { padding: 24, paddingBottom: 28 },
-  heroLogo: { width: 140, height: 44, marginBottom: 16 },
+  heroLogo: { width: 290, height: 95, marginBottom: 14, marginLeft: -6 },
   heroTitle: {
     color: '#fff',
     fontFamily: theme.fonts.extrabold,
-    fontSize: 26,
+    fontSize: 28,
     letterSpacing: -0.8,
-    lineHeight: 30,
+    lineHeight: 32,
   },
   heroSub: {
-    marginTop: 6,
-    color: 'rgba(255,255,255,0.85)',
+    marginTop: 8,
+    color: 'rgba(255,255,255,0.9)',
     fontFamily: theme.fonts.medium,
-    fontSize: 13,
+    fontSize: 14,
   },
   body: { flex: 1, padding: 24, backgroundColor: theme.colors.surface },
   label: {
