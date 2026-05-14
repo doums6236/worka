@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sora: 'Sora', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html,
+body {
+  background-color: #f0f2f5;
+  color: #050505;
+}
+
+button {
+  cursor: pointer;
+}
