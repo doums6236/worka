@@ -46,8 +46,20 @@ export const domainsApi = {
   list: () => api.request<Domain[]>('/domains'),
 };
 
+export interface UpdateCandidateProfileInput {
+  firstName?: string;
+  lastName?: string;
+  summary?: string;
+  location?: string;
+}
+
 export const candidateProfileApi = {
   get: () => api.request<CandidateProfile>('/me/candidate-profile'),
+  update: (data: UpdateCandidateProfileInput) =>
+    api.request<CandidateProfile>('/me/candidate-profile', {
+      method: 'PATCH',
+      body: data,
+    }),
   getDomains: () => api.request<UserDomain[]>('/me/candidate-profile/domains'),
   setDomains: (domainIds: string[]) =>
     api.request<UserDomain[]>('/me/candidate-profile/domains', {

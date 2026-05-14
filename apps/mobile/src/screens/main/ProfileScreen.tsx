@@ -10,6 +10,8 @@ import {
   Linking,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   FileText,
@@ -21,14 +23,19 @@ import {
   Shield,
   HelpCircle,
   Globe,
+  Pencil,
 } from 'lucide-react-native';
 import { candidateProfileApi } from '../../api/endpoints';
 import { useAuthStore } from '../../stores/auth';
 import { getLocale, getCountryCode, detectLocale } from '../../lib/i18n';
 import { theme } from '../../theme';
+import type { AppStackParamList } from '../../navigation/AppStack';
+
+type Nav = NativeStackNavigationProp<AppStackParamList>;
 
 export function ProfileScreen() {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<Nav>();
   const user = useAuthStore((s) => s.user);
   const signOut = useAuthStore((s) => s.signOut);
   const queryClient = useQueryClient();
@@ -82,6 +89,17 @@ export function ProfileScreen() {
     <View style={styles.root}>
       <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
         <Text style={styles.headerTitle}>Profil</Text>
+        {user?.role === 'candidate' && (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('EditProfile')}
+            hitSlop={8}
+            style={styles.editBtn}
+            activeOpacity={0.7}
+          >
+            <Pencil size={16} color={theme.colors.primary} />
+            <Text style={styles.editText}>Modifier</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
@@ -260,6 +278,9 @@ function Row({
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.bg },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingBottom: 14,
     backgroundColor: '#fff',
@@ -267,6 +288,8 @@ const styles = StyleSheet.create({
     borderBottomColor: theme.colors.border,
   },
   headerTitle: { fontFamily: theme.fonts.extrabold, fontSize: 22, color: '#111' },
+  editBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4 },
+  editText: { fontFamily: theme.fonts.bold, fontSize: 13, color: theme.colors.primary },
 
   identity: {
     alignItems: 'center',

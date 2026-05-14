@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -14,9 +14,13 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ChevronDown } from 'lucide-react-native';
 import { authApi } from '../api/endpoints';
 import { ApiError } from '../api/client';
 import { theme } from '../theme';
+import { getCountryCode } from '../lib/i18n';
+import { COUNTRIES, countryByCode, type Country } from '../lib/countries';
+import { CountryPickerModal } from '../components/CountryPickerModal';
 import type { AuthStackParamList } from '../navigation/AuthStack';
 
 type Nav = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
@@ -24,15 +28,30 @@ type Nav = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 export function LoginScreen() {
   const navigation = useNavigation<Nav>();
   const insets = useSafeAreaInsets();
-  const [phone, setPhone] = useState('+224');
+  const [country, setCountry] = useState<Country>(COUNTRIES[0]);
+  const [localNumber, setLocalNumber] = useState('');
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    const detected = getCountryCode();
+    if (detected) {
+      setCountry(countryByCode(detected));
+    }
+  }, []);
+
   async function onSubmit() {
     setError(null);
+    const digits = localNumber.replace(/\D/g, '');
+    if (digits.length < 6) {
+      setError('Numéro trop court');
+      return;
+    }
+    const phone = `${country.prefix}${digits}`;
     setLoading(true);
     try {
-      const res = await authApi.sendOtp(phone.replace(/\s/g, ''));
+      const res = await authApi.sendOtp(phone);
       navigation.navigate('Otp', { phone: res.phone });
     } catch (e) {
       if (e instanceof ApiError && e.status === 429) {
@@ -71,16 +90,30 @@ export function LoginScreen() {
 
       <View style={styles.body}>
         <Text style={styles.label}>Numéro de téléphone</Text>
-        <TextInput
-          style={styles.input}
-          value={phone}
-          onChangeText={setPhone}
-          placeholder="+224 622 12 34 56"
-          placeholderTextColor={theme.colors.textMuted}
-          keyboardType="phone-pad"
-          autoComplete="tel"
-        />
+        <View style={styles.phoneRow}>
+          <TouchableOpacity
+            style={styles.countryBtn}
+            onPress={() => setPickerOpen(true)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.flag}>{country.flag}</Text>
+            <Text style={styles.prefix}>{country.prefix}</Text>
+            <ChevronDown size={14} color={theme.colors.textSecondary} />
+          </TouchableOpacity>
+          <TextInput
+            style={styles.input}
+            value={localNumber}
+            onChangeText={setLocalNumber}
+            placeholder="622 12 34 56"
+            placeholderTextColor={theme.colors.textMuted}
+            keyboardType="phone-pad"
+            autoComplete="tel"
+            maxLength={15}
+          />
+        </View>
+
         {error && <Text style={styles.error}>{error}</Text>}
+
         <TouchableOpacity
           style={[styles.btn, loading && { opacity: 0.6 }]}
           onPress={onSubmit}
@@ -93,10 +126,21 @@ export function LoginScreen() {
             <Text style={styles.btnText}>Recevoir le code par SMS</Text>
           )}
         </TouchableOpacity>
+
         <Text style={styles.footer}>
-          Pays supportés : GN · SN · ML · CI · BF · TG · BJ · NE · MR
+          {COUNTRIES.map((c) => c.flag).join(' ')}
         </Text>
       </View>
+
+      <CountryPickerModal
+        visible={pickerOpen}
+        selectedCode={country.code}
+        onClose={() => setPickerOpen(false)}
+        onSelect={(c) => {
+          setCountry(c);
+          setPickerOpen(false);
+        }}
+      />
     </KeyboardAvoidingView>
   );
 }
@@ -134,7 +178,25 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginBottom: 8,
   },
+  phoneRow: { flexDirection: 'row', gap: 8 },
+  countryBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    backgroundColor: theme.colors.surfaceMuted,
+    borderWidth: 1.5,
+    borderColor: theme.colors.border,
+    borderRadius: 12,
+  },
+  flag: { fontSize: 18 },
+  prefix: {
+    fontFamily: theme.fonts.bold,
+    fontSize: 14,
+    color: '#111',
+  },
   input: {
+    flex: 1,
     backgroundColor: theme.colors.surfaceMuted,
     borderWidth: 1.5,
     borderColor: theme.colors.border,
@@ -168,8 +230,7 @@ const styles = StyleSheet.create({
   footer: {
     marginTop: 24,
     textAlign: 'center',
-    fontSize: 11,
-    color: theme.colors.textMuted,
-    fontFamily: theme.fonts.medium,
+    fontSize: 18,
+    letterSpacing: 4,
   },
 });
