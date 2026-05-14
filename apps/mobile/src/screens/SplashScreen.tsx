@@ -38,9 +38,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
   },
-  logo: { width: 270, height: 90 },
+  logo: { width: 240, height: 80 },
   tagline: {
-    marginTop: 6,
+    marginTop: 14,
     fontFamily: theme.fonts.bold,
     fontSize: 18,
     color: '#050505',
