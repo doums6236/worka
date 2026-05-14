@@ -8,9 +8,12 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Image,
+  ImageBackground,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { authApi } from '../api/endpoints';
 import { ApiError } from '../api/client';
 import { theme } from '../theme';
@@ -20,6 +23,7 @@ type Nav = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 
 export function LoginScreen() {
   const navigation = useNavigation<Nav>();
+  const insets = useSafeAreaInsets();
   const [phone, setPhone] = useState('+224');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -48,13 +52,23 @@ export function LoginScreen() {
       style={styles.root}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={styles.hero}>
-        <Text style={styles.heroTitle}>
-          Bienvenue sur{'\n'}
-          <Text style={styles.heroTitleEm}>Worka</Text>
-        </Text>
-        <Text style={styles.heroSub}>Trouve ton emploi en quelques swipes.</Text>
-      </View>
+      <ImageBackground
+        source={require('../../assets/login-hero.png')}
+        style={[styles.hero, { paddingTop: insets.top + 20 }]}
+        imageStyle={styles.heroImage}
+      >
+        <View style={styles.heroOverlay} />
+        <View style={styles.heroContent}>
+          <Image
+            source={require('../../assets/worka-logo-white.png')}
+            style={styles.heroLogo}
+            resizeMode="contain"
+          />
+          <Text style={styles.heroTitle}>Trouve l'emploi qui te ressemble</Text>
+          <Text style={styles.heroSub}>Swipe les offres en Guinée et sous-région</Text>
+        </View>
+      </ImageBackground>
+
       <View style={styles.body}>
         <Text style={styles.label}>Numéro de téléphone</Text>
         <TextInput
@@ -76,11 +90,11 @@ export function LoginScreen() {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.btnText}>Recevoir le code</Text>
+            <Text style={styles.btnText}>Recevoir le code par SMS</Text>
           )}
         </TouchableOpacity>
         <Text style={styles.footer}>
-          Pays supportés : 🇬🇳 GN, 🇸🇳 SN, 🇲🇱 ML, 🇨🇮 CI, 🇧🇫 BF, 🇹🇬 TG, 🇧🇯 BJ, 🇳🇪 NE, 🇲🇷 MR
+          Pays supportés : GN · SN · ML · CI · BF · TG · BJ · NE · MR
         </Text>
       </View>
     </KeyboardAvoidingView>
@@ -88,46 +102,54 @@ export function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: theme.colors.bg },
-  hero: {
-    height: 260,
-    padding: 28,
-    justifyContent: 'flex-end',
-    backgroundColor: theme.colors.primaryDark,
+  root: { flex: 1, backgroundColor: theme.colors.surface },
+  hero: { height: 320, justifyContent: 'flex-end' },
+  heroImage: { resizeMode: 'cover' },
+  heroOverlay: {
+    position: 'absolute',
+    inset: 0,
+    backgroundColor: 'rgba(9, 102, 199, 0.75)',
   },
-  heroTitle: { color: '#fff', fontFamily: theme.fonts.extrabold, fontSize: 30, letterSpacing: -1 },
-  heroTitleEm: { color: 'rgba(255,255,255,0.85)' },
+  heroContent: { padding: 24, paddingBottom: 28 },
+  heroLogo: { width: 140, height: 44, marginBottom: 16 },
+  heroTitle: {
+    color: '#fff',
+    fontFamily: theme.fonts.extrabold,
+    fontSize: 26,
+    letterSpacing: -0.8,
+    lineHeight: 30,
+  },
   heroSub: {
     marginTop: 6,
-    color: 'rgba(255,255,255,0.7)',
+    color: 'rgba(255,255,255,0.85)',
     fontFamily: theme.fonts.medium,
-    fontSize: 12,
+    fontSize: 13,
   },
-  body: { flex: 1, padding: 24 },
+  body: { flex: 1, padding: 24, backgroundColor: theme.colors.surface },
   label: {
     fontFamily: theme.fonts.bold,
     fontSize: 11,
-    color: '#666',
+    color: theme.colors.textSecondary,
     letterSpacing: 1,
     textTransform: 'uppercase',
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.surfaceMuted,
     borderWidth: 1.5,
     borderColor: theme.colors.border,
-    borderRadius: 14,
+    borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 13,
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: theme.fonts.medium,
-    color: '#111',
+    color: theme.colors.text,
   },
   btn: {
-    marginTop: 20,
+    marginTop: 18,
     backgroundColor: theme.colors.primary,
     paddingVertical: 15,
-    borderRadius: 16,
+    borderRadius: 12,
     alignItems: 'center',
     shadowColor: theme.colors.primary,
     shadowOpacity: 0.35,
@@ -147,7 +169,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
     textAlign: 'center',
     fontSize: 11,
-    color: theme.colors.textSecondary,
+    color: theme.colors.textMuted,
     fontFamily: theme.fonts.medium,
   },
 });

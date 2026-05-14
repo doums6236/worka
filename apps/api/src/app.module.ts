@@ -18,6 +18,7 @@ import { ApplicationsModule } from './applications/applications.module';
 import { PricingModule } from './pricing/pricing.module';
 import { PaymentsModule } from './payments/payments.module';
 import { AuditModule } from './audit/audit.module';
+import { NotificationsModule } from './notifications/notifications.module';
 import { ChatModule } from './chat/chat.module';
 
 @Module({
@@ -42,6 +43,7 @@ import { ChatModule } from './chat/chat.module';
     PricingModule,
     PaymentsModule,
     AuditModule,
+    NotificationsModule,
     ChatModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

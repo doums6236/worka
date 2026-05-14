@@ -1,18 +1,34 @@
+/**
+ * Worka design tokens. Inspired by the Facebook-style flat blue UI but
+ * with the brand's lighter cyan-leaning blue from the official logo.
+ */
 export const theme = {
   colors: {
-    primary: '#1A6FFF',
-    primaryDark: '#0038C4',
-    primaryLight: '#4A90FF',
-    bg: '#F4F7FF',
-    bgLight: '#EEF3FF',
+    // Brand blues
+    primary: '#1A91FF', // logo blue (cyan-leaning, like the 'a' bloc)
+    primaryDark: '#0966C7',
+    primaryLight: '#4FB0FF',
+    fbBlue: '#1877F2', // Facebook blue (used for some accents like primary CTAs)
+
+    // Surfaces
+    bg: '#F0F2F5', // Facebook-like off-white background
+    bgLight: '#E7F3FF', // for highlighted blocks (selected card, etc.)
     surface: '#FFFFFF',
-    text: '#111111',
-    textSecondary: '#8A8A8A',
-    textMuted: '#aaaaaa',
-    border: '#E0E8FF',
+    surfaceMuted: '#F5F6F7',
+
+    // Text
+    text: '#050505',
+    textSecondary: '#65676B',
+    textMuted: '#8A8D91',
+
+    // Lines
+    border: '#DDDFE2',
+    divider: '#CED0D4',
+
+    // Semantic
     success: '#00C47C',
     warning: '#FFB800',
-    danger: '#FF4040',
+    danger: '#E41E3F',
     premium: '#F5A623',
   },
   fonts: {
@@ -23,7 +39,7 @@ export const theme = {
     bold: 'Sora_700Bold',
     extrabold: 'Sora_800ExtraBold',
   },
-  radius: { sm: 8, md: 14, lg: 18, xl: 28, full: 9999 },
+  radius: { sm: 8, md: 12, lg: 16, xl: 24, full: 9999 },
   spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 },
   durations: { fast: 150, base: 200, slow: 300 },
 } as const;
